@@ -1,0 +1,1847 @@
+@using ValavBoysWallet.Models.Enums
+@model ValavBoysWallet.ViewModels.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="admin-dashboard">
+    @if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <div class="alert alert-danger mb-4" role="alert">
+            @errorMessage
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="alert alert-success mb-4" role="status">
+            @successMessage
+        </div>
+    }
+    <!-- ============================================
+         PAGE HEADER
+         ============================================ -->
+
+    <div class="dashboard-header">
+
+        <div>
+
+            <div class="dashboard-eyebrow">
+                Wallet Administration
+            </div>
+
+            <h1 class="dashboard-title">
+                Admin Dashboard
+            </h1>
+
+            <p class="dashboard-subtitle">
+                Monitor wallet activity, member accounts and transaction approvals.
+            </p>
+
+        </div>
+
+
+        <div class="dashboard-header-actions">
+
+            <a asp-controller="Admin"
+               asp-action="Index"
+               class="btn dashboard-action-btn dashboard-action-warning">
+
+                <i class="bi bi-hourglass-split"></i>
+
+                <span>
+                    Approval Panel
+                </span>
+
+                @if (Model.PendingTransactions > 0)
+                {
+                    <span class="dashboard-count-badge">
+                        @Model.PendingTransactions
+                    </span>
+                }
+
+            </a>
+
+
+            <a asp-controller="Admin"
+               asp-action="Reports"
+               class="btn dashboard-action-btn dashboard-action-outline">
+
+                <i class="bi bi-bar-chart-line"></i>
+
+                <span>
+                    Reports
+                </span>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================================
+         WALLET OVERVIEW
+         ============================================ -->
+
+    <div class="row g-4 mb-4">
+
+        <!-- GROUP BALANCE -->
+
+        <div class="col-12 col-xl-5">
+
+            <div class="wallet-primary-card h-100">
+
+                <div class="wallet-primary-top">
+
+                    <div>
+
+                        <div class="wallet-primary-label">
+                            Current Group Balance
+                        </div>
+
+                        <div class="wallet-primary-value">
+                            ₹@Model.GroupBalance.ToString("N2")
+                        </div>
+
+                        <div class="wallet-primary-description">
+                            Total funds currently available in the shared wallet.
+                        </div>
+
+                    </div>
+
+
+                    <div class="wallet-primary-icon">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="wallet-primary-footer">
+
+                    <div>
+
+                        <span class="wallet-status-dot"></span>
+
+                        <span>
+                            Wallet active
+                        </span>
+
+                    </div>
+
+                    <a asp-controller="Passbook"
+                       asp-action="Index"
+                       class="wallet-view-link">
+
+                        View Passbook
+
+                        <i class="bi bi-arrow-right"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- APPROVED DEPOSITS -->
+
+        <div class="col-md-6 col-xl-3">
+
+            <div class="dashboard-metric-card h-100">
+
+                <div class="metric-card-top">
+
+                    <div class="metric-icon metric-success">
+                        <i class="bi bi-arrow-down-left"></i>
+                    </div>
+
+                    <span class="metric-badge success">
+                        Approved
+                    </span>
+
+                </div>
+
+
+                <div class="metric-label">
+                    Total Deposits
+                </div>
+
+                <div class="metric-value">
+                    ₹@Model.TotalApprovedDeposits.ToString("N2")
+                </div>
+
+                <div class="metric-description">
+                    TotalApprovedDeposits
+                    Approved money added to the wallet.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- APPROVED EXPENSES -->
+
+        <div class="col-md-6 col-xl-4">
+
+            <div class="dashboard-metric-card h-100">
+
+                <div class="metric-card-top">
+
+                    <div class="metric-icon metric-danger">
+                        <i class="bi bi-arrow-up-right"></i>
+                    </div>
+
+                    <span class="metric-badge danger">
+                        Approved
+                    </span>
+
+                </div>
+
+
+                <div class="metric-label">
+                    Total Expenses
+                </div>
+
+                <div class="metric-value">
+                    ₹@Model.TotalApprovedExpenses.ToString("N2")
+                </div>
+
+                <div class="metric-description">
+                    Approved expenses deducted from the shared wallet.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================================
+         MEMBER + TRANSACTION SUMMARY
+         ============================================ -->
+
+    <div class="row g-4 mb-4">
+
+        <!-- TOTAL MEMBERS -->
+
+        <div class="col-sm-6 col-xl-3">
+
+            <div class="summary-card h-100">
+
+                <div class="summary-card-header">
+
+                    <div class="summary-icon summary-icon-primary">
+                        <i class="bi bi-people"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="summary-label">
+                    Total Members
+                </div>
+
+                <div class="summary-number">
+                    @Model.TotalMembers
+                </div>
+
+                <div class="summary-footer">
+
+                    <span class="summary-positive">
+                        @Model.ActiveMembers active
+                    </span>
+
+                    <span>
+                        accounts
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- DISABLED MEMBERS -->
+
+        <div class="col-sm-6 col-xl-3">
+
+            <div class="summary-card h-100">
+
+                <div class="summary-card-header">
+
+                    <div class="summary-icon summary-icon-danger">
+                        <i class="bi bi-person-x"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="summary-label">
+                    Disabled Members
+                </div>
+
+                <div class="summary-number">
+                    @Model.DisabledMembers
+                </div>
+
+                <div class="summary-footer">
+
+                    <span>
+                        Restricted account access
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PENDING REQUESTS -->
+
+        <div class="col-sm-6 col-xl-3">
+
+            <div class="summary-card h-100">
+
+                <div class="summary-card-header">
+
+                    <div class="summary-icon summary-icon-warning">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="summary-label">
+                    Pending Requests
+                </div>
+
+                <div class="summary-number">
+                    @Model.PendingTransactions
+                </div>
+
+                <div class="summary-footer">
+
+                    @if (Model.PendingTransactions > 0)
+                    {
+                        <span class="summary-warning-text">
+                            Needs review
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="summary-positive">
+                            All clear
+                        </span>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- APPROVED REQUESTS -->
+
+        <div class="col-sm-6 col-xl-3">
+
+            <div class="summary-card h-100">
+
+                <div class="summary-card-header">
+
+                    <div class="summary-icon summary-icon-success">
+                        <i class="bi bi-check2-circle"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="summary-label">
+                    Approved Requests
+                </div>
+
+                <div class="summary-number">
+                    @Model.ApprovedTransactions
+                </div>
+
+                <div class="summary-footer">
+
+                    <span class="summary-danger-text">
+                        @Model.RejectedTransactions rejected
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================================
+         QUICK ACTIONS
+         ============================================ -->
+
+    <div class="dashboard-section-card mb-4">
+
+        <div class="section-heading">
+
+            <div>
+
+                <h5>
+                    Quick Actions
+                </h5>
+
+                <p>
+                    Access the most frequently used admin tools.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="row g-3">
+
+            <!-- APPROVALS -->
+
+            <div class="col-md-6 col-xl">
+
+                <a asp-controller="Admin"
+                   asp-action="Index"
+                   class="quick-action-card">
+
+                    <div class="quick-action-icon action-warning">
+                        <i class="bi bi-check2-square"></i>
+                    </div>
+
+                    <div class="quick-action-content">
+
+                        <div class="quick-action-title">
+                            Approvals
+                        </div>
+
+                        <div class="quick-action-description">
+                            Review pending deposit and expense requests.
+                        </div>
+
+                    </div>
+
+                    <div class="quick-action-arrow">
+                        <i class="bi bi-chevron-right"></i>
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- MEMBERS -->
+
+            <div class="col-md-6 col-xl">
+
+                <a asp-controller="Admin"
+                   asp-action="Users"
+                   class="quick-action-card">
+
+                    <div class="quick-action-icon action-primary">
+                        <i class="bi bi-people"></i>
+                    </div>
+
+                    <div class="quick-action-content">
+
+                        <div class="quick-action-title">
+                            Members
+                        </div>
+
+                        <div class="quick-action-description">
+                            View and manage member accounts.
+                        </div>
+
+                    </div>
+
+                    <div class="quick-action-arrow">
+                        <i class="bi bi-chevron-right"></i>
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- REPORTS -->
+
+            <div class="col-md-6 col-xl">
+
+                <a asp-controller="Admin"
+                   asp-action="Reports"
+                   class="quick-action-card">
+
+                    <div class="quick-action-icon action-success">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+
+                    <div class="quick-action-content">
+
+                        <div class="quick-action-title">
+                            Reports
+                        </div>
+
+                        <div class="quick-action-description">
+                            Analyze wallet transactions and history.
+                        </div>
+
+                    </div>
+
+                    <div class="quick-action-arrow">
+                        <i class="bi bi-chevron-right"></i>
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- PASSBOOK -->
+
+            <div class="col-md-6 col-xl">
+
+                <a asp-controller="Passbook"
+                   asp-action="Index"
+                   class="quick-action-card">
+
+                    <div class="quick-action-icon action-purple">
+                        <i class="bi bi-journal-text"></i>
+                    </div>
+
+                    <div class="quick-action-content">
+
+                        <div class="quick-action-title">
+                            Group Passbook
+                        </div>
+
+                        <div class="quick-action-description">
+                            View the approved wallet ledger.
+                        </div>
+
+                    </div>
+
+                    <div class="quick-action-arrow">
+                        <i class="bi bi-chevron-right"></i>
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- RESET WALLET -->
+
+            <div class="col-md-6 col-xl">
+
+                <button type="button"
+                        class="quick-action-card reset-wallet-card"
+                        data-bs-toggle="modal"
+                        data-bs-target="#resetWalletModal">
+
+                    <div class="quick-action-icon reset-wallet-icon">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </div>
+
+                    <div class="quick-action-content">
+
+                        <div class="quick-action-title">
+                            Reset Wallet
+                        </div>
+
+                        <div class="quick-action-description">
+                            Start a fresh wallet balance cycle.
+                        </div>
+
+                    </div>
+
+                    <div class="quick-action-arrow">
+                        <i class="bi bi-chevron-right"></i>
+                    </div>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================================
+         RECENT ACTIVITY
+         ============================================ -->
+
+    <div class="dashboard-section-card recent-activity-card">
+
+        <div class="section-heading section-heading-flex">
+
+            <div>
+
+                <h5>
+                    Recent Activity
+                </h5>
+
+                <p>
+                    Latest wallet requests submitted by members.
+                </p>
+
+            </div>
+
+
+            <a asp-controller="Admin"
+               asp-action="Reports"
+               class="view-all-link">
+
+                View all
+
+                <i class="bi bi-arrow-right"></i>
+
+            </a>
+
+        </div>
+
+
+        @if (Model.RecentTransactions.Any())
+        {
+            <div class="table-responsive">
+
+                <table class="table dashboard-table align-middle mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Member
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Details
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Submitted
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var transaction in Model.RecentTransactions)
+                        {
+                            <tr>
+
+                                <!-- MEMBER -->
+
+                                <td>
+
+                                    <div class="member-cell">
+
+                                        <div class="member-avatar">
+                                            @(string.IsNullOrWhiteSpace(transaction.MemberName)
+                                                                                ? "?"
+                                                                                : transaction.MemberName
+                                                                                .Substring(0, 1)
+                                                                                .ToUpper())
+                                </div>
+
+                                        <div>
+
+                                            <div class="member-name">
+                                                @transaction.MemberName
+                                            </div>
+
+                                            <div class="member-id">
+                                                #@transaction.TransactionId
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- TYPE -->
+
+                                <td>
+
+                            @if (transaction.Type ==
+                                                        TransactionType.Deposit)
+                                    {
+                                        <span class="transaction-type deposit">
+
+                                            <i class="bi bi-arrow-down-left"></i>
+
+                                            Deposit
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="transaction-type expense">
+
+                                            <i class="bi bi-arrow-up-right"></i>
+
+                                            Expense
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- DETAILS -->
+
+                                <td>
+
+                                    @if (transaction.Type ==
+                                                                TransactionType.Deposit)
+                                    {
+                                        <div class="transaction-detail-main">
+                                            @(transaction.ReferenceNumber ?? "-")
+                                        </div>
+
+                                        <div class="transaction-detail-sub">
+                                            Payment reference
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="transaction-detail-main">
+                                            @(transaction.Purpose ?? "-")
+                                        </div>
+
+                                        <div class="transaction-detail-sub">
+                                            Expense purpose
+                                        </div>
+                                    }
+
+                                </td>
+
+
+                                <!-- AMOUNT -->
+
+                                <td>
+
+                                    <span class="transaction-amount">
+                                        ₹@transaction.Amount.ToString("N2")
+                                    </span>
+
+                                </td>
+
+
+                                <!-- STATUS -->
+
+                                <td>
+
+                                    @if (transaction.Status ==
+                                                                TransactionStatus.Pending)
+                                    {
+                                        <span class="status-badge pending">
+
+                                            <span></span>
+
+                                            Pending
+
+                                        </span>
+                                    }
+                                    else if (transaction.Status ==
+                                    TransactionStatus.Approved)
+                                    {
+                                        <span class="status-badge approved">
+
+                                            <span></span>
+
+                                            Approved
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge rejected">
+
+                                            <span></span>
+
+                                            Rejected
+
+                                        </span>
+                                    }
+
+                            </td>
+
+
+                            <!-- SUBMITTED -->
+
+                            <td>
+
+                                <div class="transaction-date">
+                                    @(transaction.CreatedDate
+                                                                    .ToLocalTime()
+                                                                    .ToString("dd MMM yyyy"))
+                                                                                         </div>
+
+                                <div class="transaction-time">
+                                    @(transaction.CreatedDate
+                                                                    .ToLocalTime()
+                                                                    .ToString("hh:mm tt"))
+                            </div>
+
+                                </td>
+
+                            </tr>
+                                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+
+                <div class="empty-state-icon">
+                    <i class="bi bi-inbox"></i>
+                </div>
+
+                <h6>
+                    No activity yet
+                </h6>
+
+                <p>
+                    Wallet transactions will appear here after members submit requests.
+                </p>
+
+            </div>
+        }
+
+    </div>
+
+
+    <!-- FRESH START -->
+    <div class="dashboard-section-card mb-4 border border-danger">
+        <h5 class="text-danger">Fresh Start</h5>
+        <p>
+            Permanently delete all wallet transactions, including pending and rejected
+            requests, and reset every balance to ₹0.00. Member accounts are kept.
+        </p>
+        <button type="button" class="btn btn-danger"
+                data-bs-toggle="modal" data-bs-target="#freshStartModal">
+            <i class="bi bi-trash me-1"></i> Fresh Start
+        </button>
+    </div>
+
+    <div class="modal fade" id="freshStartModal" tabindex="-1"
+         aria-labelledby="freshStartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger" id="freshStartModalLabel">
+                        Permanently clear wallet data
+                    </h5>
+                    <button type="button" class="btn-close"
+                            data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-controller="Admin" asp-action="FreshStart" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-body">
+                        <div class="alert alert-danger" role="alert">
+                            This permanently deletes all deposits, expenses, pending
+                            requests, rejected requests and transaction history.
+                            All wallet balances will become ₹0.00.
+                            This cannot be undone from the application.
+                        </div>
+                        <p>
+                            Member and admin accounts, passwords and roles will be kept.
+                            Previously uploaded proof files will remain on the server.
+                        </p>
+                        <label for="freshStartConfirmation" class="form-label">
+                            Type <strong>DELETE WALLET DATA</strong> to confirm:
+                        </label>
+                        <input type="text" id="freshStartConfirmation"
+                               name="confirmationText" class="form-control"
+                               autocomplete="off" spellcheck="false"
+                               pattern="DELETE WALLET DATA"
+                               title="Type DELETE WALLET DATA exactly."
+                               required />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light"
+                                data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-danger">
+                            Delete wallet data and start fresh
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         RESET WALLET CONFIRMATION MODAL
+         ===================================================== -->
+
+    <div class="modal fade"
+         id="resetWalletModal"
+         tabindex="-1"
+         aria-labelledby="resetWalletModalLabel"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content border-0 shadow">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title"
+                        id="resetWalletModalLabel">
+
+                        <i class="bi bi-exclamation-triangle me-2 text-danger"></i>
+                        Reset Group Wallet
+
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close">
+                    </button>
+
+                </div>
+
+
+                <form asp-controller="Admin"
+                      asp-action="ResetWallet"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <div class="modal-body">
+
+                        <div class="alert alert-danger">
+
+                            <strong>Warning</strong>
+
+                            <p class="mb-0 mt-2">
+                                This will reset the group wallet balance and
+                                every member's current balance to ₹0.00.
+                            </p>
+
+                        </div>
+
+                        <p>
+                            Existing transaction history will be preserved.
+                            This action should only be used when starting
+                            a completely fresh wallet balance cycle.
+                        </p>
+
+                        <label for="resetWalletConfirmation"
+                               class="form-label fw-semibold">
+
+                            Type
+                            <strong class="text-danger">
+                                RESET WALLET
+                            </strong>
+                            to confirm:
+
+                        </label>
+
+                        <input type="text"
+                               id="resetWalletConfirmation"
+                               name="confirmationText"
+                               class="form-control"
+                               placeholder="RESET WALLET"
+                               autocomplete="off"
+                               required />
+
+                    </div>
+
+
+                    <div class="modal-footer">
+
+                        <button type="button"
+                                class="btn btn-light"
+                                data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+
+                        <button type="submit"
+                                class="btn btn-danger">
+
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>
+                            Reset Wallet
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    /* =============================================
+           DASHBOARD WRAPPER
+           ============================================= */
+
+    .admin-dashboard {
+        padding: 28px 4px 40px;
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+
+    /* =============================================
+           HEADER
+           ============================================= */
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
+        margin-bottom: 28px;
+    }
+
+    .dashboard-eyebrow {
+        color: #6c757d;
+        font-size: .78rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+
+    .dashboard-title {
+        font-size: 2rem;
+        font-weight: 750;
+        color: #20252b;
+        margin-bottom: 6px;
+        letter-spacing: -.03em;
+    }
+
+    .dashboard-subtitle {
+        color: #7b8490;
+        margin: 0;
+        font-size: .95rem;
+    }
+
+    .dashboard-header-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .dashboard-action-btn {
+        min-height: 42px;
+        border-radius: 11px;
+        padding: 9px 15px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        font-size: .9rem;
+    }
+
+    .dashboard-action-warning {
+        background: #f6b91f;
+        border-color: #f6b91f;
+        color: #27210f;
+    }
+
+        .dashboard-action-warning:hover {
+            background: #e8ac10;
+            border-color: #e8ac10;
+            color: #27210f;
+        }
+
+    .dashboard-action-outline {
+        border: 1px solid #d9dee6;
+        background: #fff;
+        color: #3e4651;
+    }
+
+        .dashboard-action-outline:hover {
+            border-color: #bfc6d1;
+            background: #f8f9fb;
+            color: #20252b;
+        }
+
+    .dashboard-count-badge {
+        min-width: 22px;
+        height: 22px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: #242424;
+        color: #fff;
+        font-size: .75rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    /* =============================================
+           PRIMARY WALLET CARD
+           ============================================= */
+
+    .wallet-primary-card {
+        background: linear-gradient( 135deg, #181c22 0%, #252c35 100%);
+        border-radius: 20px;
+        padding: 26px;
+        color: #fff;
+        box-shadow: 0 14px 34px rgba(20, 26, 34, .14);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 220px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .wallet-primary-card::after {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            right: -55px;
+            top: -65px;
+            background: rgba(255, 255, 255, .045);
+        }
+
+    .wallet-primary-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .wallet-primary-label {
+        font-size: .86rem;
+        color: rgba(255, 255, 255, .68);
+        margin-bottom: 8px;
+    }
+
+    .wallet-primary-value {
+        font-size: 2.25rem;
+        font-weight: 750;
+        letter-spacing: -.04em;
+        margin-bottom: 10px;
+    }
+
+    .wallet-primary-description {
+        max-width: 330px;
+        color: rgba(255, 255, 255, .58);
+        font-size: .86rem;
+        line-height: 1.55;
+    }
+
+    .wallet-primary-icon {
+        width: 52px;
+        height: 52px;
+        flex: 0 0 52px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, .1);
+        font-size: 1.35rem;
+    }
+
+    .wallet-primary-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-top: 26px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(255, 255, 255, .1);
+        font-size: .83rem;
+        color: rgba(255, 255, 255, .65);
+        position: relative;
+        z-index: 1;
+    }
+
+    .wallet-status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        margin-right: 7px;
+        border-radius: 50%;
+        background: #53d597;
+    }
+
+    .wallet-view-link {
+        color: rgba(255, 255, 255, .9);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 600;
+    }
+
+        .wallet-view-link:hover {
+            color: #fff;
+        }
+
+
+    /* =============================================
+           METRIC CARDS
+           ============================================= */
+
+    .dashboard-metric-card,
+    .summary-card,
+    .dashboard-section-card {
+        background: #fff;
+        border: 1px solid #e8ebef;
+        box-shadow: 0 6px 24px rgba(22, 30, 40, .045);
+    }
+
+    .dashboard-metric-card {
+        border-radius: 18px;
+        padding: 22px;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+        .dashboard-metric-card:hover,
+        .summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(22, 30, 40, .07);
+        }
+
+    .metric-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+    }
+
+    .metric-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .metric-success {
+        background: #eaf8f1;
+        color: #198754;
+    }
+
+    .metric-danger {
+        background: #fff0f0;
+        color: #dc3545;
+    }
+
+    .metric-badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 5px 9px;
+        font-size: .7rem;
+        font-weight: 700;
+    }
+
+        .metric-badge.success {
+            background: #edf9f3;
+            color: #198754;
+        }
+
+        .metric-badge.danger {
+            background: #fff1f2;
+            color: #c93d4c;
+        }
+
+    .metric-label {
+        font-size: .84rem;
+        color: #7d8792;
+        margin-bottom: 5px;
+    }
+
+    .metric-value {
+        color: #242a31;
+        font-size: 1.65rem;
+        font-weight: 750;
+        letter-spacing: -.03em;
+        margin-bottom: 7px;
+    }
+
+    .metric-description {
+        color: #929aa4;
+        font-size: .8rem;
+        line-height: 1.45;
+    }
+
+
+    /* =============================================
+           SUMMARY CARDS
+           ============================================= */
+
+    .summary-card {
+        border-radius: 17px;
+        padding: 20px;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .summary-card-header {
+        margin-bottom: 22px;
+    }
+
+    .summary-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    .summary-icon-primary {
+        background: #eef4ff;
+        color: #4878d0;
+    }
+
+    .summary-icon-danger {
+        background: #fff0f1;
+        color: #d75b66;
+    }
+
+    .summary-icon-warning {
+        background: #fff6df;
+        color: #c88a08;
+    }
+
+    .summary-icon-success {
+        background: #ebf8f1;
+        color: #218a5c;
+    }
+
+    .summary-label {
+        font-size: .83rem;
+        color: #7c8691;
+        margin-bottom: 2px;
+    }
+
+    .summary-number {
+        color: #252b32;
+        font-size: 1.85rem;
+        font-weight: 750;
+        letter-spacing: -.03em;
+    }
+
+    .summary-footer {
+        color: #959da7;
+        font-size: .78rem;
+        margin-top: 4px;
+    }
+
+    .summary-positive {
+        color: #218a5c;
+        font-weight: 650;
+    }
+
+    .summary-danger-text {
+        color: #cc5662;
+        font-weight: 650;
+    }
+
+    .summary-warning-text {
+        color: #c0870f;
+        font-weight: 650;
+    }
+
+
+    /* =============================================
+           SECTION CARDS
+           ============================================= */
+
+    .dashboard-section-card {
+        border-radius: 19px;
+        padding: 24px;
+    }
+
+    .section-heading {
+        margin-bottom: 20px;
+    }
+
+        .section-heading h5 {
+            margin: 0 0 4px;
+            color: #282e35;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .section-heading p {
+            margin: 0;
+            color: #8c949d;
+            font-size: .82rem;
+        }
+
+    .section-heading-flex {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+    }
+
+
+    /* =============================================
+           QUICK ACTIONS
+           ============================================= */
+
+    .quick-action-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        min-height: 105px;
+        height: 100%;
+        padding: 17px;
+        border: 1px solid #e8ebef;
+        border-radius: 15px;
+        text-decoration: none;
+        color: inherit;
+        background: #fff;
+        transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+
+        .quick-action-card:hover {
+            transform: translateY(-2px);
+            border-color: #d7dce3;
+            box-shadow: 0 8px 20px rgba(21, 29, 39, .06);
+            color: inherit;
+        }
+
+    .quick-action-icon {
+        width: 44px;
+        height: 44px;
+        flex: 0 0 44px;
+        border-radius: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.15rem;
+    }
+
+    .action-warning {
+        background: #fff4d9;
+        color: #bd830a;
+    }
+
+    .action-primary {
+        background: #edf3ff;
+        color: #4c72c8;
+    }
+
+    .action-success {
+        background: #eaf8f1;
+        color: #218a5c;
+    }
+
+    .action-purple {
+        background: #f2edff;
+        color: #7056b8;
+    }
+
+    .quick-action-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .quick-action-title {
+        color: #2a3037;
+        font-size: .9rem;
+        font-weight: 700;
+        margin-bottom: 3px;
+    }
+
+    .quick-action-description {
+        color: #8c949d;
+        font-size: .76rem;
+        line-height: 1.4;
+    }
+
+    .quick-action-arrow {
+        color: #a8afb7;
+        font-size: .8rem;
+        transition: transform .18s ease;
+    }
+
+    .quick-action-card:hover .quick-action-arrow {
+        transform: translateX(2px);
+    }
+
+
+    /* =============================================
+           RECENT ACTIVITY
+           ============================================= */
+
+    .recent-activity-card {
+        padding-bottom: 8px;
+    }
+
+    .view-all-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #596473;
+        text-decoration: none;
+        font-size: .82rem;
+        font-weight: 650;
+    }
+
+        .view-all-link:hover {
+            color: #20252b;
+        }
+
+    .dashboard-table {
+        margin-left: -24px;
+        margin-right: -24px;
+        width: calc(100% + 48px);
+    }
+
+        .dashboard-table thead th {
+            background: #fafbfc;
+            border-top: 1px solid #edf0f3;
+            border-bottom: 1px solid #edf0f3;
+            padding: 12px 18px;
+            color: #89929d;
+            font-size: .71rem;
+            text-transform: uppercase;
+            letter-spacing: .045em;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+            .dashboard-table thead th:first-child,
+            .dashboard-table tbody td:first-child {
+                padding-left: 24px;
+            }
+
+            .dashboard-table thead th:last-child,
+            .dashboard-table tbody td:last-child {
+                padding-right: 24px;
+            }
+
+        .dashboard-table tbody td {
+            padding: 15px 18px;
+            border-bottom: 1px solid #f0f2f5;
+            color: #4d5661;
+            font-size: .83rem;
+            vertical-align: middle;
+        }
+
+        .dashboard-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .dashboard-table tbody tr:hover {
+            background: #fcfcfd;
+        }
+
+    .member-cell {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+    .member-avatar {
+        width: 38px;
+        height: 38px;
+        flex: 0 0 38px;
+        border-radius: 11px;
+        background: #f0f2f5;
+        color: #59616b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .82rem;
+        font-weight: 750;
+    }
+
+    .member-name {
+        color: #30363d;
+        font-weight: 650;
+        white-space: nowrap;
+    }
+
+    .member-id {
+        color: #a0a7af;
+        font-size: .7rem;
+        margin-top: 2px;
+    }
+
+    .transaction-type {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: .78rem;
+        font-weight: 650;
+        white-space: nowrap;
+    }
+
+        .transaction-type.deposit {
+            color: #28845d;
+        }
+
+        .transaction-type.expense {
+            color: #c65661;
+        }
+
+    .transaction-detail-main {
+        color: #46505a;
+        font-size: .81rem;
+        max-width: 230px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .transaction-detail-sub {
+        color: #a0a7af;
+        font-size: .7rem;
+        margin-top: 2px;
+    }
+
+    .transaction-amount {
+        color: #333941;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        padding: 6px 9px;
+        font-size: .72rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .status-badge > span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .status-badge.pending {
+            background: #fff6df;
+            color: #a9760c;
+        }
+
+            .status-badge.pending > span {
+                background: #e0a621;
+            }
+
+        .status-badge.approved {
+            background: #eaf8f1;
+            color: #247f59;
+        }
+
+            .status-badge.approved > span {
+                background: #32a872;
+            }
+
+        .status-badge.rejected {
+            background: #fff0f1;
+            color: #bf4f5a;
+        }
+
+            .status-badge.rejected > span {
+                background: #d9606c;
+            }
+
+    .transaction-date {
+        color: #59616b;
+        font-size: .78rem;
+        white-space: nowrap;
+    }
+
+    .transaction-time {
+        color: #a0a7af;
+        font-size: .69rem;
+        margin-top: 2px;
+    }
+
+
+    /* =============================================
+           EMPTY STATE
+           ============================================= */
+
+    .empty-state {
+        text-align: center;
+        padding: 55px 20px 60px;
+    }
+
+    .empty-state-icon {
+        width: 58px;
+        height: 58px;
+        margin: 0 auto 15px;
+        border-radius: 17px;
+        background: #f2f4f6;
+        color: #8b949d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+    }
+
+    .empty-state h6 {
+        color: #333a42;
+        font-size: .95rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .empty-state p {
+        color: #949ca5;
+        font-size: .8rem;
+        margin: 0;
+    }
+
+
+    /* =============================================
+           RESPONSIVE
+           ============================================= */
+
+    @@media (max-width: 991.98px) {
+
+        .dashboard-header {
+            flex-direction: column;
+        }
+
+        .dashboard-header-actions {
+            width: 100%;
+        }
+
+        .dashboard-action-btn {
+            flex: 1;
+            justify-content: center;
+        }
+    }
+
+
+    @@media (max-width: 767.98px) {
+
+        .admin-dashboard {
+            padding-top: 18px;
+        }
+
+        .dashboard-title {
+            font-size: 1.65rem;
+        }
+
+        .wallet-primary-card {
+            min-height: 200px;
+        }
+
+        .wallet-primary-value {
+            font-size: 1.95rem;
+        }
+
+        .dashboard-section-card {
+            padding: 20px;
+        }
+
+        .section-heading-flex {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .dashboard-table {
+            margin-left: -20px;
+            margin-right: -20px;
+            width: calc(100% + 40px);
+        }
+
+            .dashboard-table thead th:first-child,
+            .dashboard-table tbody td:first-child {
+                padding-left: 20px;
+            }
+
+            .dashboard-table thead th:last-child,
+            .dashboard-table tbody td:last-child {
+                padding-right: 20px;
+            }
+    }
+
+
+    @@media (max-width: 575.98px) {
+
+        .dashboard-header-actions {
+            flex-direction: column;
+        }
+
+        .dashboard-action-btn {
+            width: 100%;
+        }
+
+        .wallet-primary-top {
+            gap: 12px;
+        }
+
+        .wallet-primary-icon {
+            width: 46px;
+            height: 46px;
+            flex-basis: 46px;
+        }
+
+        .wallet-primary-footer {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+</style>

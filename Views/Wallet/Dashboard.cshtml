@@ -1,0 +1,1370 @@
+@using ValavBoysWallet.Models.Enums
+@model ValavBoysWallet.ViewModels.MemberDashboardViewModel
+
+@{
+    ViewData["Title"] = "Wallet Dashboard";
+
+    var firstName = string.IsNullOrWhiteSpace(Model.FullName)
+        ? "there"
+        : Model.FullName.Split(' ')[0];
+
+    var transactionCount = Model.RecentTransactions?.Count() ?? 0;
+}
+
+<style>
+
+    /* =========================================================
+           DASHBOARD
+           ========================================================= */
+
+    .wallet-dashboard {
+        width: 100%;
+    }
+
+    /* ---------------------------------------------------------
+           WELCOME HEADER
+           --------------------------------------------------------- */
+
+    .dashboard-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 26px;
+    }
+
+    .dashboard-greeting {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+    }
+
+        .dashboard-greeting h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 750;
+            letter-spacing: -0.8px;
+            color: #20243f;
+        }
+
+    .dashboard-wave {
+        display: inline-block;
+        font-size: 25px;
+        transform-origin: 70% 70%;
+    }
+
+    .dashboard-subtitle {
+        margin: 7px 0 0;
+        color: #858ba4;
+        font-size: 14px;
+    }
+
+    .dashboard-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        flex-shrink: 0;
+    }
+
+    .dashboard-action-btn {
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 9px 17px;
+        border-radius: 11px;
+        font-size: 13px;
+        font-weight: 650;
+        transition: all .2s ease;
+    }
+
+        .dashboard-action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .deposit-action {
+        color: #fff;
+        border: 0;
+        background: linear-gradient( 135deg, #7465ee, #5d4bdb );
+        box-shadow: 0 8px 20px rgba(103, 87, 232, .23);
+    }
+
+        .deposit-action:hover {
+            color: #fff;
+            box-shadow: 0 12px 25px rgba(103, 87, 232, .30);
+        }
+
+    .expense-action {
+        color: #626984;
+        background: #fff;
+        border: 1px solid #e1e4ee;
+    }
+
+        .expense-action:hover {
+            color: #e14e62;
+            border-color: #f1bcc5;
+            background: #fffafb;
+        }
+
+
+    /* =========================================================
+           MAIN BALANCE CARD
+           ========================================================= */
+
+    .wallet-balance-card {
+        position: relative;
+        min-height: 195px;
+        height: 100%;
+        overflow: hidden;
+        padding: 27px 28px;
+        border-radius: 20px;
+        color: #fff;
+        background: radial-gradient( circle at 86% 18%, rgba(255,255,255,.22), transparent 19% ), radial-gradient( circle at 100% 100%, rgba(255,255,255,.13), transparent 33% ), linear-gradient( 135deg, #7162eb 0%, #6755df 50%, #5d4bd5 100% );
+        box-shadow: 0 18px 40px rgba(91, 72, 205, .22);
+    }
+
+        .wallet-balance-card::before {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            right: -55px;
+            top: -85px;
+            border-radius: 50%;
+            border: 25px solid rgba(255,255,255,.08);
+        }
+
+        .wallet-balance-card::after {
+            content: "";
+            position: absolute;
+            width: 115px;
+            height: 115px;
+            right: 35px;
+            bottom: -75px;
+            border-radius: 50%;
+            border: 20px solid rgba(255,255,255,.07);
+        }
+
+    .balance-card-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .balance-card-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 13px;
+        color: rgba(255,255,255,.82);
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+        .balance-card-label i {
+            font-size: 17px;
+        }
+
+    .balance-amount {
+        margin: 0;
+        font-size: 34px;
+        font-weight: 750;
+        letter-spacing: -1px;
+        color: #fff;
+    }
+
+    .balance-description {
+        margin: 7px 0 0;
+        color: rgba(255,255,255,.68);
+        font-size: 12px;
+    }
+
+    .balance-bottom {
+        position: absolute;
+        left: 28px;
+        right: 28px;
+        bottom: 24px;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .balance-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 20px;
+        color: #fff;
+        background: rgba(255,255,255,.14);
+        font-size: 11px;
+        font-weight: 600;
+        backdrop-filter: blur(6px);
+    }
+
+    .balance-status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #7ff3bd;
+    }
+
+    .wallet-decoration {
+        color: rgba(255,255,255,.55);
+        font-size: 27px;
+    }
+
+
+    /* =========================================================
+           STAT CARDS
+           ========================================================= */
+
+    .wallet-stat-card {
+        position: relative;
+        min-height: 195px;
+        height: 100%;
+        overflow: hidden;
+        padding: 25px;
+        border: 1px solid #e9ebf3;
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 10px 30px rgba(37, 44, 80, .055);
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+        .wallet-stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 36px rgba(37, 44, 80, .09);
+        }
+
+    .stat-card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .stat-label {
+        margin: 0;
+        color: #7e849e;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .stat-icon {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 13px;
+        font-size: 18px;
+    }
+
+    .stat-icon-purple {
+        color: #6554df;
+        background: #eeeaff;
+    }
+
+    .stat-icon-green {
+        color: #1a9d6b;
+        background: #e3f8ef;
+    }
+
+    .stat-icon-orange {
+        color: #dc9630;
+        background: #fff3de;
+    }
+
+    .stat-number {
+        margin: 15px 0 0;
+        color: #252a47;
+        font-size: 26px;
+        font-weight: 750;
+        letter-spacing: -.7px;
+    }
+
+        .stat-number.success {
+            color: #199867;
+        }
+
+    .stat-card-footer {
+        position: absolute;
+        left: 25px;
+        right: 25px;
+        bottom: 23px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: #9398ad;
+        font-size: 11px;
+    }
+
+    .stat-mini-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 8px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 650;
+    }
+
+    .pill-green {
+        color: #16875d;
+        background: #e4f8ef;
+    }
+
+    .pill-orange {
+        color: #bc7b22;
+        background: #fff2db;
+    }
+
+
+    /* =========================================================
+           SUMMARY CARDS
+           ========================================================= */
+
+    .summary-card {
+        height: 100%;
+        padding: 22px 24px;
+        border: 1px solid #e9ebf3;
+        border-radius: 17px;
+        background: #fff;
+        box-shadow: 0 8px 26px rgba(37, 44, 80, .05);
+    }
+
+    .summary-card-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .summary-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .summary-icon {
+        width: 47px;
+        height: 47px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 14px;
+        font-size: 20px;
+    }
+
+        .summary-icon.deposit {
+            color: #149766;
+            background: #e2f8ed;
+        }
+
+        .summary-icon.expense {
+            color: #e04b61;
+            background: #ffe8ec;
+        }
+
+    .summary-title {
+        margin: 0 0 5px;
+        color: #8a90a7;
+        font-size: 12px;
+    }
+
+    .summary-amount {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 750;
+    }
+
+        .summary-amount.deposit {
+            color: #169566;
+        }
+
+        .summary-amount.expense {
+            color: #e34b61;
+        }
+
+    .summary-arrow {
+        color: #afb4c6;
+        font-size: 18px;
+    }
+
+
+    /* =========================================================
+           TRANSACTIONS PANEL
+           ========================================================= */
+
+    .transactions-panel {
+        overflow: hidden;
+        border: 1px solid #e8eaf2;
+        border-radius: 19px;
+        background: #fff;
+        box-shadow: 0 10px 32px rgba(37, 44, 80, .055);
+    }
+
+    .transactions-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 22px 24px;
+        border-bottom: 1px solid #eef0f5;
+    }
+
+        .transactions-header h5 {
+            margin: 0 0 4px;
+            color: #252a47;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .transactions-header p {
+            margin: 0;
+            color: #9297ad;
+            font-size: 11px;
+        }
+
+    .view-all-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #6858df;
+        font-size: 12px;
+        font-weight: 650;
+    }
+
+        .view-all-link:hover {
+            color: #5141cb;
+        }
+
+    .dashboard-table {
+        width: 100%;
+        margin: 0;
+    }
+
+        .dashboard-table thead th {
+            padding: 12px 20px;
+            color: #8d92a8;
+            background: #fafbfe;
+            border: 0;
+            border-bottom: 1px solid #edf0f5;
+            font-size: 10px;
+            font-weight: 650;
+            text-transform: uppercase;
+            letter-spacing: .35px;
+            white-space: nowrap;
+        }
+
+        .dashboard-table tbody td {
+            padding: 15px 20px;
+            color: #505670;
+            border-bottom: 1px solid #f0f1f5;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+        .dashboard-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .dashboard-table tbody tr {
+            transition: background .15s ease;
+        }
+
+            .dashboard-table tbody tr:hover {
+                background: #fbfbfe;
+            }
+
+    .transaction-date {
+        color: #6f758f;
+        white-space: nowrap;
+    }
+
+    .transaction-type {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+    }
+
+    .transaction-type-icon {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 10px;
+        font-size: 13px;
+    }
+
+        .transaction-type-icon.deposit {
+            color: #159666;
+            background: #e3f8ef;
+        }
+
+        .transaction-type-icon.expense {
+            color: #df4b60;
+            background: #ffe8ec;
+        }
+
+    .transaction-description {
+        max-width: 230px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #7d839b;
+    }
+
+    .transaction-amount {
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .transaction-amount.deposit {
+            color: #159666;
+        }
+
+        .transaction-amount.expense {
+            color: #df4b60;
+        }
+
+
+    /* =========================================================
+           STATUS BADGES
+           ========================================================= */
+
+    .dashboard-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 650;
+        white-space: nowrap;
+    }
+
+        .dashboard-status::before {
+            content: "";
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+        }
+
+    .status-approved {
+        color: #16875d;
+        background: #e3f7ed;
+    }
+
+        .status-approved::before {
+            background: #1ca56f;
+        }
+
+    .status-pending {
+        color: #b6781e;
+        background: #fff2d8;
+    }
+
+        .status-pending::before {
+            background: #e4a336;
+        }
+
+    .status-rejected {
+        color: #cf4258;
+        background: #ffe6ea;
+    }
+
+        .status-rejected::before {
+            background: #e14c61;
+        }
+
+
+    /* =========================================================
+           EMPTY STATE
+           ========================================================= */
+
+    .transaction-empty-state {
+        padding: 55px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 14px;
+        border-radius: 18px;
+        color: #6958df;
+        background: #eeeaff;
+        font-size: 25px;
+    }
+
+    .transaction-empty-state h6 {
+        margin-bottom: 6px;
+        color: #333850;
+        font-weight: 700;
+    }
+
+    .transaction-empty-state p {
+        margin: 0;
+        color: #9297ac;
+        font-size: 12px;
+    }
+
+
+    /* =========================================================
+           BOTTOM MESSAGE
+           ========================================================= */
+
+    .dashboard-message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        margin-top: 22px;
+        color: #9a9fb3;
+        font-size: 11px;
+    }
+
+        .dashboard-message i {
+            color: #6d5ce6;
+        }
+
+
+    /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+    @@media (max-width: 991.98px) {
+
+        .dashboard-header {
+            align-items: flex-start;
+        }
+
+        .dashboard-greeting h1 {
+            font-size: 24px;
+        }
+
+        .dashboard-table {
+            min-width: 720px;
+        }
+
+        .table-responsive {
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+
+    @@media (max-width: 767.98px) {
+
+        .dashboard-header {
+            flex-direction: column;
+        }
+
+        .dashboard-header-actions {
+            width: 100%;
+        }
+
+        .dashboard-action-btn {
+            flex: 1;
+        }
+
+        .wallet-balance-card,
+        .wallet-stat-card {
+            min-height: 180px;
+        }
+
+        .balance-amount {
+            font-size: 30px;
+        }
+
+        .transactions-header {
+            padding: 18px;
+        }
+
+        .dashboard-table thead th,
+        .dashboard-table tbody td {
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+
+        .dashboard-greeting h1 {
+            font-size: 22px;
+        }
+
+        .dashboard-header-actions {
+            flex-direction: column;
+        }
+
+        .dashboard-action-btn {
+            width: 100%;
+        }
+
+        .summary-card {
+            padding: 18px;
+        }
+
+        .view-all-link span {
+            display: none;
+        }
+
+        .dashboard-subtitle {
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .dashboard-wave {
+            font-size: 21px;
+        }
+
+        .balance-bottom {
+            left: 20px;
+            right: 20px;
+        }
+
+        .wallet-balance-card {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+    }
+
+</style>
+
+
+<div class="wallet-dashboard">
+
+
+    <!-- =====================================================
+         WELCOME
+         ===================================================== -->
+
+    <div class="dashboard-header">
+
+        <div>
+
+            <div class="dashboard-greeting">
+
+                <h1>
+                    Hey @firstName
+                </h1>
+
+                <span class="dashboard-wave">
+                    👋
+                </span>
+
+            </div>
+
+            <p class="dashboard-subtitle">
+                Here's what's happening with the Valav Boys Wallet today.
+            </p>
+
+        </div>
+
+
+        <div class="dashboard-header-actions">
+
+            <a asp-controller="Transactions"
+               asp-action="Deposit"
+               class="dashboard-action-btn deposit-action">
+
+                <i class="bi bi-plus-lg"></i>
+
+                Deposit
+
+            </a>
+
+
+            <a asp-controller="Transactions"
+               asp-action="Withdrawal"
+               class="dashboard-action-btn expense-action">
+
+                <i class="bi bi-dash-lg"></i>
+
+                Add Expense
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         PRIMARY STATS
+         ===================================================== -->
+
+    <div class="row g-3 mb-3">
+
+
+        <!-- GROUP BALANCE -->
+
+        <div class="col-xl-4 col-lg-6">
+
+            <div class="wallet-balance-card">
+
+                <div class="balance-card-content">
+
+                    <div class="balance-card-label">
+
+                        <i class="bi bi-wallet2"></i>
+
+                        Group Balance
+
+                    </div>
+
+                    <h2 class="balance-amount">
+                        ₹@Model.GroupBalance.ToString("N2")
+                    </h2>
+
+                    <p class="balance-description">
+                        Available in the shared wallet
+                    </p>
+
+                </div>
+
+
+                <div class="balance-bottom">
+
+                    <span class="balance-status">
+
+                        <span class="balance-status-dot"></span>
+
+                        Wallet Active
+
+                    </span>
+
+                    <i class="bi bi-stars wallet-decoration"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- PERSONAL BALANCE -->
+
+        <div class="col-xl-3 col-lg-6 col-md-6">
+
+            <div class="wallet-stat-card">
+
+                <div class="stat-card-top">
+
+                    <p class="stat-label">
+                        My Balance
+                    </p>
+
+                    <div class="stat-icon stat-icon-purple">
+
+                        <i class="bi bi-person-check"></i>
+
+                    </div>
+
+                </div>
+
+
+                <h3 class="stat-number">
+                    ₹@Model.PersonalBalance.ToString("N2")
+                </h3>
+
+
+                <div class="stat-card-footer">
+
+                    <span class="stat-mini-pill pill-green">
+
+                        <i class="bi bi-check2"></i>
+
+                        Available
+
+                    </span>
+
+                    Your wallet balance
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- TOTAL DEPOSITED -->
+
+        <div class="col-xl-3 col-lg-6 col-md-6">
+
+            <div class="wallet-stat-card">
+
+                <div class="stat-card-top">
+
+                    <p class="stat-label">
+                        Total Deposited
+                    </p>
+
+                    <div class="stat-icon stat-icon-green">
+
+                        <i class="bi bi-arrow-down-left"></i>
+
+                    </div>
+
+                </div>
+
+
+                <h3 class="stat-number success">
+                    ₹@Model.TotalDeposited.ToString("N2")
+                </h3>
+
+
+                <div class="stat-card-footer">
+
+                    <span class="stat-mini-pill pill-green">
+
+                        <i class="bi bi-arrow-up-right"></i>
+
+                        Approved
+
+                    </span>
+
+                    Total contribution
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- PENDING -->
+
+        <div class="col-xl-2 col-lg-6 col-md-6">
+
+            <div class="wallet-stat-card">
+
+                <div class="stat-card-top">
+
+                    <p class="stat-label">
+                        Pending
+                    </p>
+
+                    <div class="stat-icon stat-icon-orange">
+
+                        <i class="bi bi-hourglass-split"></i>
+
+                    </div>
+
+                </div>
+
+
+                <h3 class="stat-number">
+                    @Model.PendingRequests
+                </h3>
+
+
+                <div class="stat-card-footer">
+
+                    @if (Model.PendingRequests > 0)
+                    {
+                        <span class="stat-mini-pill pill-orange">
+
+                            <i class="bi bi-clock"></i>
+
+                            Waiting
+
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="stat-mini-pill pill-green">
+
+                            <i class="bi bi-check2"></i>
+
+                            Clear
+
+                        </span>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         DEPOSIT / EXPENSE SUMMARY
+         ===================================================== -->
+
+    <div class="row g-3 mb-3">
+
+        <div class="col-md-6">
+
+            <div class="summary-card">
+
+                <div class="summary-card-inner">
+
+                    <div class="summary-left">
+
+                        <div class="summary-icon deposit">
+
+                            <i class="bi bi-arrow-down-left"></i>
+
+                        </div>
+
+                        <div>
+
+                            <p class="summary-title">
+                                My Total Deposits
+                            </p>
+
+                            <h4 class="summary-amount deposit">
+                                + ₹@Model.TotalDeposited.ToString("N2")
+                            </h4>
+
+                        </div>
+
+                    </div>
+
+                    <i class="bi bi-chevron-right summary-arrow"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="col-md-6">
+
+            <div class="summary-card">
+
+                <div class="summary-card-inner">
+
+                    <div class="summary-left">
+
+                        <div class="summary-icon expense">
+
+                            <i class="bi bi-arrow-up-right"></i>
+
+                        </div>
+
+                        <div>
+
+                            <p class="summary-title">
+                                My Total Expenses
+                            </p>
+
+                            <h4 class="summary-amount expense">
+                                - ₹@Model.TotalWithdrawn.ToString("N2")
+                            </h4>
+
+                        </div>
+
+                    </div>
+
+                    <i class="bi bi-chevron-right summary-arrow"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         RECENT TRANSACTIONS
+         ===================================================== -->
+
+    <div class="transactions-panel">
+
+        <div class="transactions-header">
+
+            <div>
+
+                <h5>
+                    Recent Transactions
+                </h5>
+
+                <p>
+                    Your latest wallet activity
+                    @if (transactionCount > 0)
+                    {
+                        <span>
+                            · @transactionCount shown
+                        </span>
+                    }
+                </p>
+
+            </div>
+
+
+            <a asp-controller="Transactions"
+               asp-action="MyTransactions"
+               class="view-all-link">
+
+                <span>View all</span>
+
+                <i class="bi bi-arrow-right"></i>
+
+            </a>
+
+        </div>
+
+
+        @if (Model.RecentTransactions != null &&
+                Model.RecentTransactions.Any())
+        {
+
+            <div class="table-responsive">
+
+                <table class="dashboard-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Description
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var item in Model.RecentTransactions)
+                        {
+
+                            var isDeposit =
+                            item.Type == TransactionType.Deposit;
+
+                            <tr>
+
+                                <!-- DATE -->
+
+                                <td>
+
+                                    <span class="transaction-date">
+                                        @(item.CreatedDate
+                                                                        .ToLocalTime()
+                                                                        .ToString("dd MMM yyyy"))
+                            </span>
+
+                                </td>
+
+
+
+                                <!-- TYPE -->
+
+                                <td>
+
+                                    <div class="transaction-type">
+
+                                        @if (isDeposit)
+                                        {
+                                            <span class="transaction-type-icon deposit">
+
+                                                <i class="bi bi-arrow-down-left"></i>
+
+                                            </span>
+
+                                            <span>
+                                                Deposit
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="transaction-type-icon expense">
+
+                                                <i class="bi bi-arrow-up-right"></i>
+
+                                            </span>
+
+                                            <span>
+                                                Expense
+                                            </span>
+                                        }
+
+                                    </div>
+
+                                </td>
+
+
+
+                                <!-- DESCRIPTION -->
+
+                                <td>
+
+                                    <div class="transaction-description">
+
+                                        @if (isDeposit)
+                                        {
+                                            @(item.ReferenceNumber ?? "-")
+                                        }
+                                        else
+                                        {
+                                            @(item.Purpose ?? "-")
+                                        }
+
+                                    </div>
+
+                                </td>
+
+
+
+                                <!-- AMOUNT -->
+
+                                <td>
+
+                                    @if (isDeposit)
+                                    {
+                                        <span class="transaction-amount deposit">
+
+                                            + ₹@item.Amount.ToString("N2")
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="transaction-amount expense">
+
+                                            - ₹@item.Amount.ToString("N2")
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+
+                                <!-- STATUS -->
+
+                                <td>
+
+                                    @if (item.Status ==
+                                                                TransactionStatus.Approved)
+                                    {
+
+                                        <span class="dashboard-status status-approved">
+
+                                            Approved
+
+                                        </span>
+
+                                    }
+                                    else if (item.Status ==
+                                    TransactionStatus.Pending)
+                                    {
+
+                                        <span class="dashboard-status status-pending">
+
+                                            Pending
+
+                                        </span>
+
+                                    }
+                                    else
+                                    {
+
+                                        <span class="dashboard-status status-rejected">
+
+                                            Rejected
+
+                                        </span>
+
+                                    }
+
+                                </td>
+
+                            </tr>
+
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        }
+        else
+        {
+
+            <div class="transaction-empty-state">
+
+                <div class="empty-icon">
+
+                    <i class="bi bi-receipt"></i>
+
+                </div>
+
+                <h6>
+                    No transactions yet
+                </h6>
+
+                <p>
+                    Your wallet activity will appear here
+                    after your first transaction.
+                </p>
+
+            </div>
+
+        }
+
+    </div>
+
+
+
+    <!-- =====================================================
+         SMALL BOTTOM MESSAGE
+         ===================================================== -->
+
+    <div class="dashboard-message">
+
+        <i class="bi bi-stars"></i>
+
+        <span>
+            Same people. Different bills. Stay together 💜
+        </span>
+
+    </div>
+
+
+</div>

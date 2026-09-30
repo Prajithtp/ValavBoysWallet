@@ -1,0 +1,1188 @@
+@model ValavBoysWallet.ViewModels.AdminUserManagementViewModel
+
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<style>
+
+    /* =========================================================
+           USER MANAGEMENT PAGE
+           ========================================================= */
+
+    .users-page {
+        width: 100%;
+    }
+
+
+    /* =========================================================
+           PAGE HEADER
+           ========================================================= */
+
+    .users-page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 26px;
+    }
+
+    .users-title-wrap {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .users-title-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 14px;
+        color: #6757e8;
+        background: #eeeaff;
+        font-size: 21px;
+    }
+
+    .users-page-header h1 {
+        margin: 0;
+        color: #20243f;
+        font-size: 27px;
+        font-weight: 750;
+        letter-spacing: -.7px;
+    }
+
+    .users-page-header p {
+        margin: 6px 0 0;
+        color: #8c92a8;
+        font-size: 13px;
+    }
+
+    .users-dashboard-btn {
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 9px 15px;
+        border: 1px solid #e0e3ed;
+        border-radius: 11px;
+        color: #656c88;
+        background: #fff;
+        font-size: 12px;
+        font-weight: 650;
+        text-decoration: none;
+        transition: all .2s ease;
+        white-space: nowrap;
+    }
+
+        .users-dashboard-btn:hover {
+            color: #6757e8;
+            border-color: #d3cdf8;
+            background: #fbfaff;
+            transform: translateY(-1px);
+        }
+
+
+    /* =========================================================
+           SUMMARY CARDS
+           ========================================================= */
+
+    .users-summary-row {
+        margin-bottom: 22px;
+    }
+
+    .user-summary-card {
+        height: 100%;
+        min-height: 112px;
+        padding: 19px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border: 1px solid #e9ebf3;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 7px 24px rgba(37, 44, 80, .045);
+        transition: all .2s ease;
+    }
+
+        .user-summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 11px 28px rgba(37, 44, 80, .075);
+        }
+
+    .summary-icon {
+        width: 46px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 13px;
+        font-size: 19px;
+    }
+
+        .summary-icon.purple {
+            color: #6757e8;
+            background: #eeeaff;
+        }
+
+        .summary-icon.green {
+            color: #17875e;
+            background: #e3f7ed;
+        }
+
+        .summary-icon.red {
+            color: #d7485d;
+            background: #ffe6ea;
+        }
+
+        .summary-icon.yellow {
+            color: #ad771f;
+            background: #fff2d9;
+        }
+
+    .summary-content {
+        min-width: 0;
+    }
+
+    .summary-label {
+        display: block;
+        margin-bottom: 5px;
+        color: #959aae;
+        font-size: 9px;
+        font-weight: 650;
+        text-transform: uppercase;
+        letter-spacing: .25px;
+    }
+
+    .summary-value {
+        margin: 0;
+        color: #343950;
+        font-size: 22px;
+        font-weight: 750;
+        letter-spacing: -.3px;
+    }
+
+        .summary-value.green {
+            color: #16875d;
+        }
+
+        .summary-value.red {
+            color: #d7485d;
+        }
+
+        .summary-value.balance {
+            font-size: 19px;
+        }
+
+
+    /* =========================================================
+           MEMBERS PANEL
+           ========================================================= */
+
+    .members-panel {
+        overflow: hidden;
+        border: 1px solid #e8eaf2;
+        border-radius: 19px;
+        background: #fff;
+        box-shadow: 0 10px 32px rgba(37, 44, 80, .055);
+    }
+
+    .members-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 20px 22px;
+        border-bottom: 1px solid #edf0f5;
+    }
+
+    .members-panel-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .members-panel-icon {
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 10px;
+        color: #6757e8;
+        background: #eeeaff;
+        font-size: 14px;
+    }
+
+    .members-panel-header h5 {
+        margin: 0;
+        color: #292e49;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .members-panel-header p {
+        margin: 3px 0 0;
+        color: #969baf;
+        font-size: 9px;
+    }
+
+    .member-count-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 10px;
+        border-radius: 20px;
+        color: #6152d4;
+        background: #eeeaff;
+        font-size: 9px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+
+    /* =========================================================
+           TABLE
+           ========================================================= */
+
+    .users-table {
+        width: 100%;
+        margin: 0;
+    }
+
+        .users-table thead th {
+            padding: 12px 15px;
+            color: #8d92a8;
+            background: #fafbfe;
+            border: 0;
+            border-bottom: 1px solid #edf0f5;
+            font-size: 8px;
+            font-weight: 650;
+            text-transform: uppercase;
+            letter-spacing: .35px;
+            white-space: nowrap;
+        }
+
+        .users-table tbody td {
+            padding: 16px 15px;
+            color: #555b74;
+            border-bottom: 1px solid #f0f1f5;
+            font-size: 10px;
+            vertical-align: middle;
+        }
+
+        .users-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .users-table tbody tr {
+            transition: background .15s ease;
+        }
+
+            .users-table tbody tr:hover {
+                background: #fbfbfe;
+            }
+
+
+    /* =========================================================
+           MEMBER DETAILS
+           ========================================================= */
+
+    .member-profile {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 195px;
+    }
+
+    .member-avatar {
+        width: 39px;
+        height: 39px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 12px;
+        color: #fff;
+        background: linear-gradient(135deg, #7667ee, #5847d5);
+        font-size: 11px;
+        font-weight: 750;
+        box-shadow: 0 5px 13px rgba(103, 87, 232, .16);
+    }
+
+    .member-profile-info {
+        min-width: 0;
+    }
+
+    .member-name {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #3e435d;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .member-email,
+    .member-phone {
+        display: block;
+        max-width: 165px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-top: 3px;
+        color: #999eb2;
+        font-size: 8px;
+    }
+
+
+    /* =========================================================
+           MONEY
+           ========================================================= */
+
+    .member-money {
+        font-size: 10px;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+        .member-money.balance {
+            color: #4b5069;
+        }
+
+        .member-money.deposit {
+            color: #159566;
+        }
+
+        .member-money.expense {
+            color: #df4b60;
+        }
+
+
+    /* =========================================================
+           TRANSACTIONS
+           ========================================================= */
+
+    .transaction-count {
+        color: #454a63;
+        font-size: 11px;
+        font-weight: 750;
+    }
+
+    .transaction-sub {
+        display: block;
+        margin-top: 4px;
+        color: #999eb2;
+        font-size: 8px;
+        white-space: nowrap;
+    }
+
+        .transaction-sub.pending {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 7px;
+            border-radius: 15px;
+            color: #a9701c;
+            background: #fff2d9;
+            font-weight: 650;
+        }
+
+
+    /* =========================================================
+           STATUS
+           ========================================================= */
+
+    .member-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 9px;
+        border-radius: 20px;
+        font-size: 8px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .member-status::before {
+            content: "";
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+        }
+
+        .member-status.active {
+            color: #16875d;
+            background: #e3f7ed;
+        }
+
+            .member-status.active::before {
+                background: #1ca56f;
+            }
+
+        .member-status.disabled {
+            color: #cf4258;
+            background: #ffe6ea;
+        }
+
+            .member-status.disabled::before {
+                background: #df4b60;
+            }
+
+
+    /* =========================================================
+           ACTIONS
+           ========================================================= */
+
+    .member-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 7px;
+        min-width: 170px;
+    }
+
+    .member-action-btn {
+        min-height: 33px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 6px 9px;
+        border-radius: 9px;
+        font-size: 8px;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: all .18s ease;
+    }
+
+        .member-action-btn.details {
+            color: #6152d4;
+            border: 1px solid #d8d2fa;
+            background: #f8f7ff;
+        }
+
+            .member-action-btn.details:hover {
+                color: #fff;
+                border-color: #6757e8;
+                background: #6757e8;
+            }
+
+        .member-action-btn.enable {
+            color: #16875d;
+            border: 1px solid #bde7d4;
+            background: #f4fcf8;
+        }
+
+            .member-action-btn.enable:hover {
+                color: #fff;
+                border-color: #159566;
+                background: #159566;
+            }
+
+        .member-action-btn.disable {
+            color: #cf4258;
+            border: 1px solid #f0c7ce;
+            background: #fff8f9;
+        }
+
+            .member-action-btn.disable:hover {
+                color: #fff;
+                border-color: #df4b60;
+                background: #df4b60;
+            }
+
+        .member-action-btn.delete {
+            color: #b42318;
+            border: 1px solid #f3c6c2;
+            background: #fff7f6;
+        }
+
+            .member-action-btn.delete:hover {
+                color: #fff;
+                border-color: #d92d20;
+                background: #d92d20;
+            }
+    /* =========================================================
+           EMPTY STATE
+           ========================================================= */
+
+    .users-empty-state {
+        padding: 70px 20px;
+        text-align: center;
+    }
+
+    .users-empty-icon {
+        width: 68px;
+        height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        border-radius: 20px;
+        color: #6757e8;
+        background: #eeeaff;
+        font-size: 27px;
+    }
+
+    .users-empty-state h5 {
+        margin: 0 0 7px;
+        color: #333850;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .users-empty-state p {
+        max-width: 400px;
+        margin: 0 auto;
+        color: #969baf;
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+
+    /* =========================================================
+           FOOT MESSAGE
+           ========================================================= */
+
+    .users-foot-message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        margin-top: 20px;
+        color: #999eb2;
+        font-size: 9px;
+        text-align: center;
+    }
+
+        .users-foot-message i {
+            color: #6757e8;
+        }
+
+
+    /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+    @@media (max-width: 1199.98px) {
+
+        .users-table {
+            min-width: 1000px;
+        }
+
+        .table-responsive {
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+
+
+    @@media (max-width: 767.98px) {
+
+        .users-page-header {
+            flex-direction: column;
+            gap: 16px;
+        }
+
+            .users-page-header h1 {
+                font-size: 23px;
+            }
+
+        .users-dashboard-btn {
+            width: 100%;
+        }
+
+        .members-panel-header {
+            align-items: flex-start;
+        }
+    }
+
+
+    @@media (max-width: 575.98px) {
+
+        .users-title-icon {
+            width: 44px;
+            height: 44px;
+            font-size: 19px;
+        }
+
+        .users-page-header p {
+            font-size: 11px;
+        }
+
+        .user-summary-card {
+            min-height: 100px;
+            padding: 17px;
+        }
+
+        .members-panel-header {
+            flex-direction: column;
+            padding: 18px;
+        }
+
+        .member-count-pill {
+            align-self: flex-start;
+        }
+
+        .users-table thead th,
+        .users-table tbody td {
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        .users-empty-state {
+            padding: 50px 18px;
+        }
+    }
+
+</style>
+
+
+<div class="users-page">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
+
+    <div class="users-page-header">
+
+        <div class="users-title-wrap">
+
+            <div class="users-title-icon">
+                <i class="bi bi-people"></i>
+            </div>
+
+            <div>
+
+                <h1>
+                    User Management
+                </h1>
+
+                <p>
+                    View wallet members, balances and transaction activity.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <a asp-controller="Admin"
+           asp-action="Dashboard"
+           class="users-dashboard-btn">
+
+            <i class="bi bi-grid-1x2-fill"></i>
+
+            Admin Dashboard
+
+        </a>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         SUMMARY CARDS
+         ===================================================== -->
+
+    <div class="row g-3 users-summary-row">
+
+
+        <!-- TOTAL MEMBERS -->
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="user-summary-card">
+
+                <div class="summary-icon purple">
+                    <i class="bi bi-people"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Total Members
+                    </span>
+
+                    <h3 class="summary-value">
+                        @Model.TotalMembers
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIVE MEMBERS -->
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="user-summary-card">
+
+                <div class="summary-icon green">
+                    <i class="bi bi-person-check"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Active Members
+                    </span>
+
+                    <h3 class="summary-value green">
+                        @Model.ActiveMembers
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- DISABLED MEMBERS -->
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="user-summary-card">
+
+                <div class="summary-icon red">
+                    <i class="bi bi-person-slash"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Disabled Members
+                    </span>
+
+                    <h3 class="summary-value red">
+                        @Model.DisabledMembers
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MEMBER BALANCES -->
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="user-summary-card">
+
+                <div class="summary-icon yellow">
+                    <i class="bi bi-wallet2"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Member Balances
+                    </span>
+
+                    <h3 class="summary-value balance">
+                        ₹@Model.TotalMemberBalance.ToString("N2")
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MEMBERS PANEL
+         ===================================================== -->
+
+    <div class="members-panel">
+
+
+        <div class="members-panel-header">
+
+            <div class="members-panel-title">
+
+                <div class="members-panel-icon">
+                    <i class="bi bi-person-lines-fill"></i>
+                </div>
+
+                <div>
+
+                    <h5>
+                        Wallet Members
+                    </h5>
+
+                    <p>
+                        Review member balances, activity and account access.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <span class="member-count-pill">
+
+                <i class="bi bi-people"></i>
+
+                @Model.TotalMembers
+                @(Model.TotalMembers == 1 ? "Member" : "Members")
+
+            </span>
+
+        </div>
+
+
+
+        @if (Model.Members.Any())
+        {
+
+            <div class="table-responsive">
+
+                <table class="users-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Member
+                            </th>
+
+                            <th>
+                                Balance
+                            </th>
+
+                            <th>
+                                Deposited
+                            </th>
+
+                            <th>
+                                Expenses
+                            </th>
+
+                            <th>
+                                Transactions
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th class="text-end">
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var member in Model.Members)
+                        {
+                            var memberInitial =
+                            !string.IsNullOrWhiteSpace(member.FullName)
+                            ? member.FullName.Substring(0, 1).ToUpper()
+                            : "M";
+
+                            <tr>
+
+
+                                <!-- MEMBER -->
+                                <td>
+
+                                    <div class="member-profile">
+
+                                        <div class="member-avatar">
+                                            @memberInitial
+                                        </div>
+
+                                        <div class="member-profile-info">
+
+                                            <div class="member-name"
+                                                 title="@member.FullName">
+
+                                                @member.FullName
+
+                                            </div>
+
+                                            <span class="member-email"
+                                                  title="@member.Email">
+
+                                                @member.Email
+
+                                            </span>
+
+
+                                            @if (!string.IsNullOrWhiteSpace(
+                                                                                member.PhoneNumber))
+                                            {
+                                                <span class="member-phone">
+
+                                                    <i class="bi bi-telephone me-1"></i>
+
+                                                    @member.PhoneNumber
+
+                                                </span>
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- BALANCE -->
+                                <td>
+
+                                    <span class="member-money balance">
+
+                                        ₹@member.CurrentBalance.ToString("N2")
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- DEPOSITED -->
+                                <td>
+
+                                    <span class="member-money deposit">
+
+                                        + ₹@member.TotalDeposited.ToString("N2")
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- EXPENSES -->
+                                <td>
+
+                                    <span class="member-money expense">
+
+                                        - ₹@member.TotalExpenses.ToString("N2")
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- TRANSACTIONS -->
+                                <td>
+
+                                    <div class="transaction-count">
+                                        @member.TotalTransactions
+                                    </div>
+
+
+                                    @if (member.PendingTransactions > 0)
+                                    {
+                                        <span class="transaction-sub pending">
+
+                                            <i class="bi bi-clock"></i>
+
+                                            @member.PendingTransactions
+                                            @(member.PendingTransactions == 1
+                                                                            ? "pending"
+                                                                            : "pending")
+
+                            </span>
+                                                        }
+                                    else
+                                    {
+                                        <span class="transaction-sub">
+
+                                            <i class="bi bi-check2"></i>
+
+                                            No pending requests
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- STATUS -->
+                                <td>
+
+                                    @if (member.IsDisabled)
+                                    {
+                                        <span class="member-status disabled">
+
+                                            Disabled
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="member-status active">
+
+                                            Active
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+                                <td>
+
+                                    <div class="member-actions">
+
+
+                                        <!-- DETAILS -->
+                                        <a asp-controller="Admin"
+                                           asp-action="MemberDetails"
+                                           asp-route-id="@member.UserId"
+                                           class="member-action-btn details">
+
+                                            <i class="bi bi-eye"></i>
+
+                                            Details
+
+                                        </a>
+
+
+                                        <!-- ENABLE / DISABLE -->
+                                        @if (member.IsDisabled)
+                                        {
+                                            <form asp-controller="Admin"
+                                                  asp-action="EnableMember"
+                                                  method="post"
+                                                  class="d-inline">
+
+                                                <input type="hidden"
+                                                       name="id"
+                                                       value="@member.UserId" />
+
+
+                                                <button type="submit"
+                                                        class="member-action-btn enable"
+                                                        onclick="return confirm('Enable @member.FullName and allow this member to sign in again?');">
+
+                                                    <i class="bi bi-person-check"></i>
+
+                                                    Enable
+
+                                                </button>
+
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-controller="Admin"
+                                                  asp-action="DisableMember"
+                                                  method="post"
+                                                  class="d-inline">
+
+                                                <input type="hidden"
+                                                       name="id"
+                                                       value="@member.UserId" />
+
+
+                                                <button type="submit"
+                                                        class="member-action-btn disable"
+                                                        onclick="return confirm('Disable @member.FullName? This member will not be able to sign in again until the account is enabled.');">
+
+                                                    <i class="bi bi-person-x"></i>
+
+                                                    Disable
+
+                                                </button>
+
+                                            </form>
+                                        }
+                                        <!-- DELETE -->
+                                        <form asp-controller="Admin"
+                                              asp-action="DeleteMember"
+                                              method="post"
+                                              class="d-inline">
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@member.UserId" />
+
+                                            <button type="submit"
+                                                    class="member-action-btn delete"
+                                                    onclick="return confirm('Permanently delete @member.FullName? This is only allowed when the member has no transaction history and a zero wallet balance.');">
+
+                                                <i class="bi bi-trash"></i>
+
+                                                Delete
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+
+            <!-- EMPTY STATE -->
+            <div class="users-empty-state">
+
+                <div class="users-empty-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+
+                <h5>
+                    No members found
+                </h5>
+
+                <p>
+                    Registered users assigned to the Member role
+                    will appear here once they join the shared wallet.
+                </p>
+
+            </div>
+        }
+
+    </div>
+
+
+
+    <!-- =====================================================
+         FOOT MESSAGE
+         ===================================================== -->
+
+    <div class="users-foot-message">
+
+        <i class="bi bi-shield-check"></i>
+
+        <span>
+            Disabling a member prevents future sign-ins without
+            removing their wallet transaction history.
+        </span>
+
+    </div>
+
+</div>

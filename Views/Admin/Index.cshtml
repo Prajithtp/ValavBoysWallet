@@ -1,0 +1,2116 @@
+@* @model IEnumerable<ValavBoysWallet.ViewModels.AdminTransactionViewModel> *@
+@model ValavBoysWallet.ViewModels.AdminApprovalPanelViewModel
+
+@{
+    ViewData["Title"] = "Approval Panel";
+
+    var pendingCount = Model.PendingRequests;
+    var visiblePendingCount = Model.PendingTransactions.Count;
+
+    var filtersActive =
+        !string.IsNullOrWhiteSpace(Model.TransactionType) ||
+        !string.IsNullOrWhiteSpace(Model.MemberId) ||
+        !string.IsNullOrWhiteSpace(Model.DateFilter) ||
+        !string.IsNullOrWhiteSpace(Model.SearchTerm);
+}
+
+<style>
+
+    /* =========================================================
+           ADMIN APPROVAL PAGE
+           ========================================================= */
+
+    .approval-page {
+        width: 100%;
+    }
+
+
+    /* =========================================================
+           HEADER
+           ========================================================= */
+
+    .approval-page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 26px;
+    }
+
+    .approval-title-group {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .approval-title-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 14px;
+        color: #6757e8;
+        background: #eeeaff;
+        font-size: 21px;
+    }
+
+    .approval-page-header h1 {
+        margin: 0;
+        color: #20243f;
+        font-size: 27px;
+        font-weight: 750;
+        letter-spacing: -.7px;
+    }
+
+    .approval-page-header p {
+        margin: 6px 0 0;
+        color: #8c92a8;
+        font-size: 13px;
+    }
+
+    .approval-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .approval-dashboard-link {
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 9px 15px;
+        border: 1px solid #e0e3ed;
+        border-radius: 11px;
+        color: #656c88;
+        background: #fff;
+        font-size: 12px;
+        font-weight: 650;
+        transition: all .2s ease;
+    }
+
+        .approval-dashboard-link:hover {
+            color: #6757e8;
+            border-color: #d3cdf8;
+            background: #fbfaff;
+            transform: translateY(-1px);
+        }
+
+
+    /* =========================================================
+           ALERTS
+           ========================================================= */
+
+    .approval-alert {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 18px;
+        padding: 14px 16px;
+        border: 0;
+        border-radius: 13px;
+        font-size: 13px;
+    }
+
+        .approval-alert i {
+            margin-top: 1px;
+            font-size: 17px;
+        }
+
+        .approval-alert.alert-success {
+            color: #177d58;
+            background: #e7f8f0;
+        }
+
+        .approval-alert.alert-danger {
+            color: #c44156;
+            background: #ffe9ed;
+        }
+
+
+    /* =========================================================
+           OVERVIEW CARDS
+           ========================================================= */
+
+    .approval-summary-row {
+        margin-bottom: 20px;
+    }
+
+    .approval-summary-card {
+        height: 100%;
+        padding: 20px 21px;
+        border: 1px solid #e9ebf3;
+        border-radius: 17px;
+        background: #fff;
+        box-shadow: 0 8px 28px rgba(37, 44, 80, .05);
+    }
+
+    .approval-summary-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .approval-summary-label {
+        margin: 0 0 7px;
+        color: #8d93aa;
+        font-size: 11px;
+        font-weight: 550;
+    }
+
+    .approval-summary-number {
+        margin: 0;
+        color: #252a47;
+        font-size: 25px;
+        font-weight: 750;
+    }
+
+        .approval-summary-number.warning {
+            color: #c4872c;
+        }
+
+        .approval-summary-number.purple {
+            color: #6252dd;
+        }
+
+    .approval-summary-icon {
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 14px;
+        font-size: 19px;
+    }
+
+    .summary-warning {
+        color: #d4912e;
+        background: #fff3df;
+    }
+
+    .summary-purple {
+        color: #6858df;
+        background: #eeeaff;
+    }
+
+    .summary-green {
+        color: #188d62;
+        background: #e3f8ef;
+    }
+
+
+    /* =========================================================
+           REQUEST PANEL
+           ========================================================= */
+
+    .approval-panel {
+        overflow: hidden;
+        border: 1px solid #e8eaf2;
+        border-radius: 19px;
+        background: #fff;
+        box-shadow: 0 10px 32px rgba(37, 44, 80, .055);
+    }
+
+    .approval-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 21px 23px;
+        border-bottom: 1px solid #edf0f5;
+    }
+
+        .approval-panel-header h5 {
+            margin: 0 0 4px;
+            color: #252a47;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .approval-panel-header p {
+            margin: 0;
+            color: #9297ad;
+            font-size: 11px;
+        }
+
+    .pending-count-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 11px;
+        border-radius: 20px;
+        color: #ae741e;
+        background: #fff2d9;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .pending-count-badge::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #e4a038;
+        }
+
+
+    /* =========================================================
+           TABLE
+           ========================================================= */
+
+    .approval-table {
+        width: 100%;
+        margin: 0;
+    }
+
+        .approval-table thead th {
+            padding: 12px 18px;
+            color: #8d92a8;
+            background: #fafbfe;
+            border: 0;
+            border-bottom: 1px solid #edf0f5;
+            font-size: 10px;
+            font-weight: 650;
+            text-transform: uppercase;
+            letter-spacing: .35px;
+            white-space: nowrap;
+        }
+
+        .approval-table tbody td {
+            padding: 16px 18px;
+            border-bottom: 1px solid #f0f1f5;
+            color: #555b74;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+        .approval-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .approval-table tbody tr {
+            transition: background .15s ease;
+        }
+
+            .approval-table tbody tr:hover {
+                background: #fbfbfe;
+            }
+
+
+    /* =========================================================
+           MEMBER CELL
+           ========================================================= */
+
+    .approval-member {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-width: 185px;
+    }
+
+    .approval-member-avatar {
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 12px;
+        color: #fff;
+        background: linear-gradient( 135deg, #7666ed, #5948d6 );
+        font-size: 13px;
+        font-weight: 750;
+        box-shadow: 0 5px 14px rgba(103, 87, 232, .18);
+    }
+
+    .approval-member-name {
+        max-width: 165px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #343951;
+        font-weight: 650;
+    }
+
+    .approval-member-email {
+        max-width: 175px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-top: 2px;
+        color: #969baf;
+        font-size: 10px;
+    }
+
+
+    /* =========================================================
+           TYPE
+           ========================================================= */
+
+    .approval-type {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 9px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 650;
+        white-space: nowrap;
+    }
+
+        .approval-type.deposit {
+            color: #16885e;
+            background: #e3f8ee;
+        }
+
+        .approval-type.withdrawal {
+            color: #d7485d;
+            background: #ffe7eb;
+        }
+
+
+    /* =========================================================
+           REFERENCE
+           ========================================================= */
+
+    .approval-reference {
+        max-width: 200px;
+    }
+
+    .approval-reference-main {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #454a63;
+        font-weight: 600;
+    }
+
+    .approval-reference-sub {
+        margin-top: 3px;
+        color: #9a9fb2;
+        font-size: 10px;
+    }
+
+
+    /* =========================================================
+           AMOUNT
+           ========================================================= */
+
+    .approval-amount {
+        font-size: 12px;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+        .approval-amount.deposit {
+            color: #159566;
+        }
+
+        .approval-amount.withdrawal {
+            color: #df4b60;
+        }
+
+
+    /* =========================================================
+           PROOF BUTTON
+           ========================================================= */
+
+    .proof-button {
+        min-height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border: 1px solid #d9d4fa;
+        border-radius: 9px;
+        color: #6252d7;
+        background: #f9f8ff;
+        font-size: 10px;
+        font-weight: 650;
+        transition: all .18s ease;
+    }
+
+        .proof-button:hover {
+            color: #fff;
+            border-color: #6858df;
+            background: #6858df;
+        }
+
+    .no-proof-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 9px;
+        border-radius: 20px;
+        color: #7d8298;
+        background: #f0f2f6;
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+
+    /* =========================================================
+           DATE
+           ========================================================= */
+
+    .approval-date-main {
+        color: #4f546d;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .approval-date-sub {
+        display: block;
+        margin-top: 3px;
+        color: #9a9fb3;
+        font-size: 9px;
+        white-space: nowrap;
+    }
+
+
+    /* =========================================================
+           ACTIONS
+           ========================================================= */
+
+    .approval-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 7px;
+    }
+
+    .approve-button,
+    .reject-button {
+        min-height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 6px 10px;
+        border-radius: 9px;
+        font-size: 10px;
+        font-weight: 700;
+        transition: all .18s ease;
+        white-space: nowrap;
+    }
+
+    .approve-button {
+        color: #fff;
+        border: 1px solid #20a872;
+        background: linear-gradient( 135deg, #26ad78, #16945f );
+        box-shadow: 0 5px 12px rgba(25, 153, 102, .16);
+    }
+
+        .approve-button:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 7px 15px rgba(25, 153, 102, .22);
+        }
+
+    .reject-button {
+        color: #dd4c61;
+        border: 1px solid #f0bbc4;
+        background: #fff;
+    }
+
+        .reject-button:hover {
+            color: #fff;
+            border-color: #df4b60;
+            background: #df4b60;
+            transform: translateY(-1px);
+        }
+
+
+    /* =========================================================
+           EMPTY STATE
+           ========================================================= */
+
+    .approval-empty {
+        padding: 65px 20px;
+        text-align: center;
+    }
+
+    .approval-empty-icon {
+        width: 68px;
+        height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        border-radius: 20px;
+        color: #188d62;
+        background: #e4f8ef;
+        font-size: 28px;
+    }
+
+    .approval-empty h5 {
+        margin: 0 0 6px;
+        color: #333850;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .approval-empty p {
+        margin: 0;
+        color: #969baf;
+        font-size: 11px;
+    }
+
+
+    /* =========================================================
+           MODAL
+           ========================================================= */
+
+    .approval-modal .modal-content {
+        overflow: hidden;
+        border: 0;
+        border-radius: 19px;
+        box-shadow: 0 25px 75px rgba(29, 34, 66, .22);
+    }
+
+    .approval-modal .modal-header {
+        padding: 19px 22px;
+        border-bottom: 1px solid #edf0f5;
+    }
+
+    .approval-modal .modal-title {
+        color: #2a2f4a;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .modal-transaction-number {
+        display: block;
+        margin-top: 3px;
+        color: #9499ad;
+        font-size: 10px;
+    }
+
+    .approval-modal .modal-body {
+        padding: 22px;
+    }
+
+    .approval-modal .modal-footer {
+        padding: 14px 22px;
+        border-top: 1px solid #edf0f5;
+        background: #fafbfe;
+    }
+
+
+    /* =========================================================
+           MODAL INFO
+           ========================================================= */
+
+    .proof-info-grid {
+        margin-bottom: 18px;
+    }
+
+    .proof-info-item {
+        height: 100%;
+        padding: 13px 14px;
+        border: 1px solid #eceef4;
+        border-radius: 12px;
+        background: #fafbfe;
+    }
+
+    .proof-info-label {
+        display: block;
+        margin-bottom: 5px;
+        color: #999eb1;
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: .35px;
+    }
+
+    .proof-info-value {
+        color: #42475f;
+        font-size: 12px;
+        font-weight: 650;
+        word-break: break-word;
+    }
+
+        .proof-info-value.amount {
+            color: #159566;
+        }
+
+    .proof-image-wrapper {
+        padding: 9px;
+        border: 1px solid #e7eaf1;
+        border-radius: 15px;
+        background: #f6f7fb;
+        text-align: center;
+    }
+
+        .proof-image-wrapper img {
+            max-height: 63vh;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+
+    /* =========================================================
+           REJECT MODAL
+           ========================================================= */
+
+    .reject-transaction-summary {
+        padding: 15px;
+        border: 1px solid #eceef4;
+        border-radius: 14px;
+        background: #fafbfe;
+    }
+
+    .reject-summary-label {
+        display: block;
+        margin-bottom: 4px;
+        color: #999eb1;
+        font-size: 9px;
+        text-transform: uppercase;
+    }
+
+    .reject-summary-value {
+        color: #41465e;
+        font-size: 12px;
+        font-weight: 650;
+    }
+
+    .reject-warning {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        margin-bottom: 17px;
+        padding: 12px 13px;
+        border-radius: 11px;
+        color: #ba751d;
+        background: #fff3dc;
+        font-size: 11px;
+    }
+
+        .reject-warning i {
+            margin-top: 1px;
+            font-size: 14px;
+        }
+
+
+    /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+    @@media (max-width: 991.98px) {
+
+        .approval-page-header {
+            align-items: flex-start;
+        }
+
+        .approval-table {
+            min-width: 1050px;
+        }
+    }
+
+    @@media (max-width: 767.98px) {
+
+        .approval-page-header {
+            flex-direction: column;
+        }
+
+            .approval-page-header h1 {
+                font-size: 23px;
+            }
+
+        .approval-header-actions,
+        .approval-dashboard-link {
+            width: 100%;
+        }
+
+        .approval-panel-header {
+            padding: 18px;
+        }
+    }
+
+    .approval-summary-number.success {
+        color: #16a34a;
+    }
+
+    .approval-summary-number.danger {
+        color: #dc2626;
+    }
+
+    .summary-danger {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .approval-summary-subtext {
+        display: block;
+        margin-top: 4px;
+        font-size: 0.78rem;
+        color: #94a3b8;
+        font-weight: 500;
+    }
+    /* =========================================================
+       FILTER REQUESTS
+       ========================================================= */
+
+    .approval-filter-panel {
+        background: #ffffff;
+        border: 1px solid #ececf3;
+        border-radius: 18px;
+        padding: 20px;
+        margin-bottom: 22px;
+        box-shadow: 0 8px 24px rgba(31, 35, 53, 0.04);
+    }
+
+    .approval-filter-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .approval-filter-header-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: #f1efff;
+        color: #6f63d9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+    }
+
+    .approval-filter-header h5 {
+        margin: 0;
+        color: #26293a;
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .approval-filter-header p {
+        margin: 3px 0 0;
+        color: #9297ad;
+        font-size: 11px;
+    }
+
+    .approval-filter-label {
+        display: block;
+        margin-bottom: 7px;
+        color: #5f6478;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .approval-filter-control {
+        width: 100%;
+        min-height: 42px;
+        border: 1px solid #e3e5ec;
+        border-radius: 11px;
+        background: #ffffff;
+        color: #35394d;
+        padding: 9px 12px;
+        font-size: 12px;
+        outline: none;
+        transition: all .2s ease;
+    }
+
+        .approval-filter-control:focus {
+            border-color: #8b82df;
+            box-shadow: 0 0 0 3px rgba(111, 99, 217, 0.10);
+        }
+
+    .approval-search-wrapper {
+        position: relative;
+    }
+
+        .approval-search-wrapper i {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ba0b5;
+            font-size: 13px;
+            pointer-events: none;
+        }
+
+        .approval-search-wrapper .approval-filter-control {
+            padding-left: 36px;
+        }
+
+    .approval-filter-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 9px;
+        margin-top: 18px;
+    }
+
+    .approval-filter-apply,
+    .approval-filter-clear {
+        min-height: 40px;
+        border-radius: 10px;
+        padding: 9px 15px;
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        text-decoration: none;
+        transition: all .2s ease;
+    }
+
+    .approval-filter-apply {
+        border: 1px solid #6f63d9;
+        background: #6f63d9;
+        color: #ffffff;
+    }
+
+        .approval-filter-apply:hover {
+            background: #5f54c8;
+            border-color: #5f54c8;
+            color: #ffffff;
+        }
+
+    .approval-filter-clear {
+        border: 1px solid #e3e5ec;
+        background: #ffffff;
+        color: #686d80;
+    }
+
+        .approval-filter-clear:hover {
+            background: #f7f7fa;
+            color: #35394d;
+        }
+
+    @@media (max-width: 767.98px) {
+        .approval-filter-actions
+
+    {
+        justify-content: stretch;
+    }
+
+    .approval-filter-apply,
+    .approval-filter-clear {
+        flex: 1;
+    }
+
+    }
+
+</style>
+
+
+<div class="approval-page">
+
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <div class="approval-page-header">
+
+        <div class="approval-title-group">
+
+            <div class="approval-title-icon">
+                <i class="bi bi-check2-square"></i>
+            </div>
+
+            <div>
+
+                <h1>
+                    Approval Panel
+                </h1>
+
+                <p>
+                    Review deposits and expenses before they affect
+                    the shared wallet.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="approval-header-actions">
+
+            <a asp-controller="Admin"
+               asp-action="Dashboard"
+               class="approval-dashboard-link">
+
+                <i class="bi bi-grid-1x2-fill"></i>
+
+                Admin Dashboard
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         SUCCESS MESSAGE
+         ===================================================== -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success
+                        alert-dismissible
+                        fade show
+                        approval-alert">
+
+            <i class="bi bi-check-circle-fill"></i>
+
+            <div class="flex-grow-1">
+                @TempData["SuccessMessage"]
+            </div>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close">
+            </button>
+
+        </div>
+    }
+
+
+
+    <!-- =====================================================
+         ERROR MESSAGE
+         ===================================================== -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger
+                        alert-dismissible
+                        fade show
+                        approval-alert">
+
+            <i class="bi bi-exclamation-circle-fill"></i>
+
+            <div class="flex-grow-1">
+                @TempData["ErrorMessage"]
+            </div>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close">
+            </button>
+
+        </div>
+    }
+
+
+
+    <!-- =====================================================
+         SUMMARY
+         ===================================================== -->
+
+    <div class="row g-3 mb-4">
+
+        <!-- Pending Requests -->
+        <div class="col-xl-3 col-md-6">
+            <div class="approval-summary-card h-100">
+                <div class="approval-summary-inner">
+
+                    <div>
+                        <p class="approval-summary-label">
+                            Pending Requests
+                        </p>
+
+                        <h3 class="approval-summary-number warning">
+                            @Model.PendingRequests
+                        </h3>
+
+                        <span class="approval-summary-subtext">
+                            Waiting for review
+                        </span>
+                    </div>
+
+                    <div class="approval-summary-icon summary-warning">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Approved Requests -->
+        <div class="col-xl-3 col-md-6">
+            <div class="approval-summary-card h-100">
+                <div class="approval-summary-inner">
+
+                    <div>
+                        <p class="approval-summary-label">
+                            Approved Requests
+                        </p>
+
+                        <h3 class="approval-summary-number success">
+                            @Model.ApprovedRequests
+                        </h3>
+
+                        <span class="approval-summary-subtext">
+                            Successfully approved
+                        </span>
+                    </div>
+
+                    <div class="approval-summary-icon summary-green">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Rejected Requests -->
+        <div class="col-xl-3 col-md-6">
+            <div class="approval-summary-card h-100">
+                <div class="approval-summary-inner">
+
+                    <div>
+                        <p class="approval-summary-label">
+                            Rejected Requests
+                        </p>
+
+                        <h3 class="approval-summary-number danger">
+                            @Model.RejectedRequests
+                        </h3>
+
+                        <span class="approval-summary-subtext">
+                            Requests declined
+                        </span>
+                    </div>
+
+                    <div class="approval-summary-icon summary-danger">
+                        <i class="bi bi-x-circle"></i>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Total Processed -->
+        <div class="col-xl-3 col-md-6">
+            <div class="approval-summary-card h-100">
+                <div class="approval-summary-inner">
+
+                    <div>
+                        <p class="approval-summary-label">
+                            Total Processed
+                        </p>
+
+                        <h3 class="approval-summary-number purple">
+                            @Model.TotalProcessed
+                        </h3>
+
+                        <span class="approval-summary-subtext">
+                            Approved + rejected
+                        </span>
+                    </div>
+
+                    <div class="approval-summary-icon summary-purple">
+                        <i class="bi bi-clipboard-check"></i>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- =====================================================
+     FILTER REQUESTS
+     ===================================================== -->
+
+    <div class="approval-filter-panel">
+
+        <div class="approval-filter-header">
+
+            <div class="approval-filter-header-icon">
+                <i class="bi bi-funnel"></i>
+            </div>
+
+            <div>
+                <h5>Filter Requests</h5>
+                <p>
+                    Narrow the pending queue by type, member,
+                    date or search term.
+                </p>
+            </div>
+
+        </div>
+
+
+        <form asp-controller="Admin"
+              asp-action="Index"
+              method="get">
+
+            <div class="row g-3">
+
+                <!-- Transaction Type -->
+                <div class="col-xl-3 col-md-6">
+
+                    <label class="approval-filter-label">
+                        Transaction Type
+                    </label>
+
+                    <select name="transactionType"
+                            class="approval-filter-control">
+
+                        <option value="">
+                            All Types
+                        </option>
+
+                        <option value="Deposit"
+                                selected="@(Model.TransactionType == "Deposit")">
+                            Deposit
+                        </option>
+
+                        <option value="Withdrawal"
+                                selected="@(Model.TransactionType == "Withdrawal")">
+                            Withdrawal
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Member -->
+                <div class="col-xl-3 col-md-6">
+
+                    <label class="approval-filter-label">
+                        Member
+                    </label>
+
+                    <select name="memberId"
+                            class="approval-filter-control">
+
+                        <option value="">
+                            All Members
+                        </option>
+
+                        @foreach (var member in Model.Members)
+                        {
+                            <option value="@member.UserId"
+                                    selected="@(Model.MemberId == member.UserId)">
+                                @member.FullName
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <!-- Date -->
+                <div class="col-xl-3 col-md-6">
+
+                    <label class="approval-filter-label">
+                        Date
+                    </label>
+
+                    <select name="dateFilter"
+                            class="approval-filter-control">
+
+                        <option value="">
+                            All Dates
+                        </option>
+
+                        <option value="Today"
+                                selected="@(Model.DateFilter == "Today")">
+                            Today
+                        </option>
+
+                        <option value="Last7Days"
+                                selected="@(Model.DateFilter == "Last7Days")">
+                            Last 7 Days
+                        </option>
+
+                        <option value="Last30Days"
+                                selected="@(Model.DateFilter == "Last30Days")">
+                            Last 30 Days
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Search -->
+                <div class="col-xl-3 col-md-6">
+
+                    <label class="approval-filter-label">
+                        Search
+                    </label>
+
+                    <div class="approval-search-wrapper">
+
+                        <i class="bi bi-search"></i>
+
+                        <input type="text"
+                               name="searchTerm"
+                               value="@Model.SearchTerm"
+                               class="approval-filter-control"
+                               placeholder="Member, reference or purpose" />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="approval-filter-actions">
+
+                <a asp-controller="Admin"
+                   asp-action="Index"
+                   class="approval-filter-clear">
+
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Clear
+
+                </a>
+
+                <button type="submit"
+                        class="approval-filter-apply">
+
+                    <i class="bi bi-funnel-fill"></i>
+                    Apply Filters
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- =====================================================
+         APPROVAL TABLE
+         ===================================================== -->
+
+    <div class="approval-panel">
+
+        <div class="approval-panel-header">
+
+            <div>
+
+                <h5>
+                    Pending Requests
+                </h5>
+
+                <p>
+                    Verify payment details carefully before taking action.
+                </p>
+
+            </div>
+
+
+            <span class="pending-count-badge">
+
+                @if (filtersActive)
+                {
+                    <span>
+                        @visiblePendingCount of @pendingCount Pending
+                    </span>
+                }
+                else
+                {
+                    <span>
+                        @pendingCount Pending
+                    </span>
+                }
+
+            </span>
+
+        </div>
+
+
+        @if (Model.PendingTransactions.Any())
+        {
+            <div class="table-responsive">
+
+                <table class="approval-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Member
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Reference / Purpose
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Proof
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th class="text-end">
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var item in Model.PendingTransactions)
+                        {
+                            var isDeposit =
+                            item.Type == "Deposit";
+
+                            var memberInitial =
+                            !string.IsNullOrWhiteSpace(item.MemberName)
+                            ? item.MemberName.Substring(0, 1).ToUpper()
+                            : "M";
+
+                            <tr>
+
+
+                                <!-- MEMBER -->
+
+                                <td>
+
+                                    <div class="approval-member">
+
+                                        <div class="approval-member-avatar">
+                                            @memberInitial
+                                        </div>
+
+                                        <div>
+
+                                            <div class="approval-member-name">
+                                                @item.MemberName
+                                            </div>
+
+                                            <div class="approval-member-email">
+                                                @item.MemberEmail
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+
+                                <!-- TYPE -->
+
+                                <td>
+
+                                    @if (isDeposit)
+                                    {
+                                        <span class="approval-type deposit">
+
+                                            <i class="bi bi-arrow-down-left"></i>
+
+                                            Deposit
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="approval-type withdrawal">
+
+                                            <i class="bi bi-arrow-up-right"></i>
+
+                                            Expense
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+
+                                <!-- REFERENCE / PURPOSE -->
+
+                                <td>
+
+                                    <div class="approval-reference">
+
+                                        @if (isDeposit)
+                                        {
+                                            <div class="approval-reference-main">
+
+                                                @(string.IsNullOrWhiteSpace(
+                                                                                    item.ReferenceNumber)
+                                                                                    ? "-"
+                                                                                    : item.ReferenceNumber)
+
+                                </div>
+
+                                            <div class="approval-reference-sub">
+                                                Payment reference
+                                            </div>
+                                                                }
+                                        else
+                                        {
+                                            <div class="approval-reference-main">
+
+                                                @(string.IsNullOrWhiteSpace(
+                                                                                    item.Purpose)
+                                                                                    ? "-"
+                                                                                    : item.Purpose)
+
+                                </div>
+
+                                            <div class="approval-reference-sub">
+                                                Expense purpose
+                                            </div>
+                                                                }
+
+                                    </div>
+
+                                </td>
+
+
+
+                                <!-- AMOUNT -->
+
+                                <td>
+
+                                    @if (isDeposit)
+                                    {
+                                        <span class="approval-amount deposit">
+                                            + ₹@item.Amount.ToString("N2")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="approval-amount withdrawal">
+                                            - ₹@item.Amount.ToString("N2")
+                                        </span>
+                                    }
+
+                                </td>
+
+
+
+                                <!-- PROOF -->
+
+                                <td>
+
+                                    @if (isDeposit)
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(
+                                        item.ScreenshotPath))
+                                        {
+                                            <button type="button"
+                                                    class="proof-button"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#proofModal-@item.TransactionId">
+
+                                                <i class="bi bi-image"></i>
+
+                                                View Proof
+
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="no-proof-badge">
+
+                                                <i class="bi bi-image-alt"></i>
+
+                                                No Proof
+
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            —
+                                        </span>
+                                    }
+
+                                </td>
+
+
+
+                                <!-- DATE -->
+
+                                <td>
+
+                                    @if (isDeposit &&
+                                                                item.TransactionDate.HasValue)
+                                    {
+                                        <div class="approval-date-main">
+                                            @(item.TransactionDate.Value.ToString("dd MMM yyyy"))
+                                        </div>
+
+                                        <span class="approval-date-sub">
+                                            Payment date
+                                        </span>
+
+                                        <span class="approval-date-sub">
+                                            Submitted:
+                                            @(item.CreatedDate.ToLocalTime().ToString("dd MMM, hh:mm tt"))
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <div class="approval-date-main">
+                                            @(item.CreatedDate.ToLocalTime().ToString("dd MMM yyyy"))
+                                        </div>
+
+                                        <span class="approval-date-sub">
+                                            @(item.CreatedDate.ToLocalTime().ToString("hh:mm tt"))
+                                        </span>
+                                    }
+
+                                </td>
+
+
+
+                                <!-- ACTIONS -->
+
+                                <td>
+
+                                    <div class="approval-actions">
+
+
+                                        <!-- APPROVE -->
+
+                                        <form asp-controller="Admin"
+                                              asp-action="Approve"
+                                              asp-route-id="@item.TransactionId"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="approve-button"
+                                                    onclick="return confirm(
+                                                                'Are you sure you want to approve this transaction?');">
+
+                                                <i class="bi bi-check-lg"></i>
+
+                                                Approve
+
+                                            </button>
+
+                                        </form>
+
+
+
+                                        <!-- REJECT -->
+
+                                        <button type="button"
+                                                class="reject-button"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#rejectModal-@item.TransactionId">
+
+                                            <i class="bi bi-x-lg"></i>
+
+                                            Reject
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <div class="approval-empty">
+
+                @if (filtersActive)
+                {
+                    <div class="approval-empty-icon">
+                        <i class="bi bi-search"></i>
+                    </div>
+
+                    <h5>
+                        No matching requests
+                    </h5>
+
+                    <p>
+                        No pending requests match the filters you selected.
+                        Try changing or clearing the filters.
+                    </p>
+
+                    <a asp-controller="Admin"
+                       asp-action="Index"
+                       class="approval-filter-clear mt-2">
+
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        Clear Filters
+
+                    </a>
+                }
+                else
+                {
+                    <div class="approval-empty-icon">
+                        <i class="bi bi-check2-all"></i>
+                    </div>
+
+                    <h5>
+                        All caught up
+                    </h5>
+
+                    <p>
+                        There are no pending wallet requests right now.
+                    </p>
+                }
+
+            </div>
+        }
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODALS
+         ===================================================== -->
+    @if (Model.PendingTransactions.Any())
+    {
+        foreach (var item in Model.PendingTransactions)
+        {
+
+            <!-- =================================================
+                 PAYMENT PROOF MODAL
+                 ================================================= -->
+            @if (item.Type == "Deposit" &&
+                !string.IsNullOrWhiteSpace(item.ScreenshotPath))
+            {
+                <div class="modal fade approval-modal"
+                     id="proofModal-@item.TransactionId"
+                     tabindex="-1"
+                     aria-hidden="true">
+
+                    <div class="modal-dialog
+                                            modal-lg
+                                            modal-dialog-centered">
+
+                        <div class="modal-content">
+
+
+                            <!-- HEADER -->
+
+                            <div class="modal-header">
+
+                                <div>
+
+                                    <h5 class="modal-title">
+                                        Payment Proof
+                                    </h5>
+
+                                    <span class="modal-transaction-number">
+                                        Transaction #@item.TransactionId
+                                    </span>
+
+                                </div>
+
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close">
+                                </button>
+
+                            </div>
+
+
+
+                            <!-- BODY -->
+
+                            <div class="modal-body">
+
+                                <div class="row g-3 proof-info-grid">
+
+
+                                    <div class="col-md-6">
+
+                                        <div class="proof-info-item">
+
+                                            <span class="proof-info-label">
+                                                Member
+                                            </span>
+
+                                            <span class="proof-info-value">
+                                                @item.MemberName
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <div class="col-md-6">
+
+                                        <div class="proof-info-item">
+
+                                            <span class="proof-info-label">
+                                                Amount
+                                            </span>
+
+                                            <span class="proof-info-value amount">
+                                                ₹@item.Amount.ToString("N2")
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <div class="col-md-6">
+
+                                        <div class="proof-info-item">
+
+                                            <span class="proof-info-label">
+                                                Reference Number
+                                            </span>
+
+                                            <span class="proof-info-value">
+
+                                                @(string.IsNullOrWhiteSpace(
+                                                                                    item.ReferenceNumber)
+                                                                                    ? "-"
+                                                                                    : item.ReferenceNumber)
+
+                                </span>
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <div class="col-md-6">
+
+                                        <div class="proof-info-item">
+
+                                            <span class="proof-info-value">
+
+                                    @if (item.TransactionDate.HasValue)
+                                                {
+                                                    <span>
+                                                        @(item.TransactionDate.Value.ToString("dd MMM yyyy"))
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span>
+                                                        Not available
+                                                    </span>
+                                                }
+
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <div class="col-12">
+
+                                        <div class="proof-info-item">
+
+                                            <span class="proof-info-label">
+                                                Submitted
+                                            </span>
+
+                                            <span class="proof-info-value">
+                                                @(item.CreatedDate.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt"))
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <!-- IMAGE -->
+
+                                <div class="proof-image-wrapper">
+
+                                    <img src="@item.ScreenshotPath"
+                                         alt="Payment proof for transaction @item.TransactionId"
+                                         class="img-fluid" />
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- FOOTER -->
+
+                            <div class="modal-footer">
+
+                                <button type="button"
+                                        class="btn btn-outline-secondary btn-sm"
+                                        data-bs-dismiss="modal">
+
+                                    Close
+
+                                </button>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+
+
+    <!-- =================================================
+         REJECT TRANSACTION MODAL
+         ================================================= -->
+
+    <div class="modal fade approval-modal"
+         id="rejectModal-@item.TransactionId"
+         tabindex="-1"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content">
+
+
+                <!-- HEADER -->
+
+                <div class="modal-header">
+
+                    <div>
+
+                        <h5 class="modal-title">
+                            Reject Transaction
+                        </h5>
+
+                        <span class="modal-transaction-number">
+                            Transaction #@item.TransactionId
+                        </span>
+
+                    </div>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close">
+                    </button>
+
+                </div>
+
+
+
+                <!-- FORM -->
+
+                <form asp-controller="Admin"
+                      asp-action="Reject"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="TransactionId"
+                           value="@item.TransactionId" />
+
+
+                    <div class="modal-body">
+
+
+                        <div class="reject-warning">
+
+                            <i class="bi bi-exclamation-triangle"></i>
+
+                            <div>
+
+                                Rejecting this request will notify
+                                the member with the reason you provide.
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="reject-transaction-summary">
+
+                            <div class="row g-3">
+
+
+                                <div class="col-sm-6">
+
+                                    <span class="reject-summary-label">
+                                        Member
+                                    </span>
+
+                                    <span class="reject-summary-value">
+                                        @item.MemberName
+                                    </span>
+
+                                </div>
+
+
+
+                                <div class="col-sm-6">
+
+                                    <span class="reject-summary-label">
+                                        Amount
+                                    </span>
+
+                                    <span class="reject-summary-value">
+                                        ₹@item.Amount.ToString("N2")
+                                    </span>
+
+                                </div>
+
+
+
+                                <div class="col-sm-6">
+
+                                    <span class="reject-summary-label">
+                                        Type
+                                    </span>
+
+                                    <span class="reject-summary-value">
+                                        @(item.Type == "Deposit"
+                                                                                ? "Deposit"
+                                                                                : "Expense")
+                                    </span>
+
+                                        </div>
+
+
+
+                                @if (item.Type == "Deposit")
+                                        {
+                                            <div class="col-sm-6">
+
+                                                <span class="reject-summary-label">
+                                                    Reference
+                                                </span>
+
+                                                <span class="reject-summary-value">
+
+                                                    @(string.IsNullOrWhiteSpace(
+                                                                                            item.ReferenceNumber)
+                                                                                            ? "-"
+                                                                                            : item.ReferenceNumber)
+
+                                    </span>
+
+                                            </div>
+                                                                }
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <!-- REASON -->
+
+                                <div class="mt-4">
+
+                                    <label for="rejectionReason-@item.TransactionId"
+                                           class="form-label">
+
+                                        Rejection Reason
+
+                                    </label>
+
+                                    <textarea id="rejectionReason-@item.TransactionId"
+                                      name="RejectionReason"
+                                      class="form-control"
+                                      rows="4"
+                                      maxlength="250"
+                                      required
+                                      placeholder="Explain why this request is being rejected..."></textarea>
+
+                                    <div class="form-text">
+                                        The member will see this reason
+                                        in My Transactions.
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- FOOTER -->
+
+                            <div class="modal-footer">
+
+                                <button type="button"
+                                        class="btn btn-outline-secondary btn-sm"
+                                        data-bs-dismiss="modal">
+
+                                    Cancel
+
+                                </button>
+
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm">
+
+                                    <i class="bi bi-x-circle me-1"></i>
+
+                                    Confirm Rejection
+
+                                </button>
+
+                            </div>
+
+                        </form>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
+    }
+
+
+</div>

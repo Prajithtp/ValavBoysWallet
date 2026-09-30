@@ -1,0 +1,1363 @@
+/* ============================================================
+   VALAV BOYS WALLET
+   GLOBAL UI SYSTEM
+   ============================================================ */
+
+:root {
+    --tpw-primary: #6757e8;
+    --tpw-primary-dark: #5042d6;
+    --tpw-primary-soft: #eeeaff;
+    --tpw-sidebar: #191a2e;
+    --tpw-sidebar-light: #242641;
+    --tpw-bg: #f5f7fc;
+    --tpw-card: #ffffff;
+    --tpw-text: #1e2340;
+    --tpw-muted: #7a809d;
+    --tpw-border: #e8ebf4;
+    --tpw-success: #16a36a;
+    --tpw-success-soft: #dcf8ec;
+    --tpw-danger: #e64b5f;
+    --tpw-danger-soft: #ffe7ea;
+    --tpw-warning: #f0ab2e;
+    --tpw-warning-soft: #fff3d6;
+    --tpw-info: #2878e8;
+    --tpw-info-soft: #e4f0ff;
+    --tpw-radius-sm: 10px;
+    --tpw-radius: 16px;
+    --tpw-radius-lg: 22px;
+    --tpw-sidebar-width: 250px;
+    --tpw-topbar-height: 72px;
+    --tpw-shadow: 0 10px 35px rgba(34, 40, 80, 0.07);
+    --tpw-shadow-hover: 0 16px 40px rgba(34, 40, 80, 0.12);
+}
+
+
+/* ============================================================
+   BASE
+   ============================================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+
+html {
+    font-size: 15px;
+    min-height: 100%;
+}
+
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    background: var(--tpw-bg);
+    color: var(--tpw-text);
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+
+a {
+    text-decoration: none;
+}
+
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+
+.tpw-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--tpw-sidebar-width);
+    display: flex;
+    flex-direction: column;
+    background: radial-gradient( circle at 20% 90%, rgba(103, 87, 232, 0.25), transparent 35% ), linear-gradient( 180deg, #1b1c31 0%, #171829 100% );
+    color: #fff;
+    z-index: 1050;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    box-shadow: 10px 0 35px rgba(16, 17, 35, 0.08);
+}
+
+
+/* ============================================================
+   BRAND
+   ============================================================ */
+
+.tpw-brand {
+    min-height: 95px;
+    display: flex;
+    align-items: center;
+    padding: 20px 22px;
+}
+
+
+.tpw-brand-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: #fff;
+}
+
+
+    .tpw-brand-link:hover {
+        color: #fff;
+    }
+
+
+.tpw-brand-icon {
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    font-size: 22px;
+    background: linear-gradient( 135deg, #7466f3, #5647d9 );
+    box-shadow: 0 10px 25px rgba(105, 87, 232, 0.35);
+}
+
+
+.tpw-brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    font-size: 18px;
+}
+
+
+    .tpw-brand-text span {
+        font-weight: 700;
+    }
+
+
+    .tpw-brand-text strong {
+        margin-top: 4px;
+        color: #796bff;
+        font-size: 21px;
+    }
+
+
+/* ============================================================
+   SIDEBAR NAVIGATION
+   ============================================================ */
+
+.tpw-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 13px 13px;
+}
+
+
+.tpw-nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 50px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    color: #b8bdd6;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.22s ease;
+}
+
+
+    .tpw-nav-link:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.07);
+        transform: translateX(2px);
+    }
+
+
+    .tpw-nav-link.active {
+        color: #fff;
+        background: linear-gradient( 135deg, #6f60ec, #5a48db );
+        box-shadow: 0 9px 24px rgba(93, 74, 221, 0.3);
+    }
+
+
+.tpw-nav-icon {
+    width: 30px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 18px;
+}
+
+
+/* ============================================================
+   SIDEBAR QUOTE
+   ============================================================ */
+
+.tpw-sidebar-bottom {
+    margin-top: auto;
+    padding: 22px 18px 30px;
+}
+
+
+.tpw-sidebar-quote {
+    position: relative;
+    padding: 23px 20px;
+    overflow: hidden;
+    text-align: center;
+    border-radius: 20px;
+    background: linear-gradient( 145deg, rgba(111, 96, 236, 0.19), rgba(111, 96, 236, 0.08) );
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+
+    .tpw-sidebar-quote i {
+        color: #887cff;
+        font-size: 20px;
+    }
+
+
+    .tpw-sidebar-quote p {
+        margin: 12px 0 8px;
+        color: #e5e6f5;
+        font-size: 13px;
+        line-height: 1.7;
+        font-style: italic;
+    }
+
+
+    .tpw-sidebar-quote span {
+        font-size: 18px;
+    }
+
+
+/* ============================================================
+   APP WRAPPER
+   ============================================================ */
+
+.tpw-app {
+    min-height: 100vh;
+    margin-left: var(--tpw-sidebar-width);
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+
+.tpw-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    height: var(--tpw-topbar-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--tpw-border);
+}
+
+
+.tpw-topbar-left,
+.tpw-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+
+/* ============================================================
+   MOBILE MENU BUTTON
+   ============================================================ */
+
+.tpw-menu-button {
+    width: 42px;
+    height: 42px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 11px;
+    background: transparent;
+    color: #626987;
+    font-size: 26px;
+}
+
+
+    .tpw-menu-button:hover {
+        background: #f1f3fa;
+        color: var(--tpw-primary);
+    }
+
+
+/* ============================================================
+   SEARCH
+   ============================================================ */
+
+.tpw-search {
+    width: 390px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 15px;
+    border-radius: 12px;
+    background: #f3f5fb;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+
+    .tpw-search:focus-within {
+        background: #fff;
+        border-color: rgba(103, 87, 232, 0.35);
+        box-shadow: 0 0 0 4px rgba(103, 87, 232, 0.08);
+    }
+
+
+    .tpw-search i {
+        color: #858ba8;
+    }
+
+
+    .tpw-search input {
+        width: 100%;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: var(--tpw-text);
+        font-size: 14px;
+    }
+
+
+        .tpw-search input::placeholder {
+            color: #959bb4;
+        }
+
+
+/* ============================================================
+   NOTIFICATION
+   ============================================================ */
+
+.tpw-notification-button {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #737995;
+    font-size: 19px;
+}
+
+
+    .tpw-notification-button:hover {
+        background: #f2f4fa;
+        color: var(--tpw-primary);
+    }
+
+
+.tpw-notification-dot {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ee4e62;
+    border: 2px solid white;
+}
+
+
+/* ============================================================
+   USER PROFILE
+   ============================================================ */
+
+.tpw-user-menu {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 5px 8px;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: inherit;
+}
+
+
+    .tpw-user-menu:hover {
+        background: #f5f6fb;
+    }
+
+
+.tpw-avatar {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    color: #fff;
+    font-weight: 700;
+    background: linear-gradient( 135deg, #5267c9, #384da8 );
+    box-shadow: 0 6px 15px rgba(69, 88, 178, 0.2);
+}
+
+
+.tpw-user-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 90px;
+    text-align: left;
+}
+
+
+    .tpw-user-info strong {
+        max-width: 170px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: var(--tpw-text);
+        font-size: 13px;
+    }
+
+
+    .tpw-user-info small {
+        margin-top: 1px;
+        color: var(--tpw-muted);
+        font-size: 11px;
+    }
+
+
+.tpw-user-chevron {
+    color: #8b91a9;
+    font-size: 12px;
+}
+
+
+.tpw-profile-dropdown {
+    min-width: 200px;
+    margin-top: 10px !important;
+    padding: 8px;
+    border: 1px solid var(--tpw-border);
+    border-radius: 13px;
+    box-shadow: var(--tpw-shadow);
+}
+
+
+    .tpw-profile-dropdown .dropdown-item {
+        padding: 9px 11px;
+        border-radius: 8px;
+        font-size: 13px;
+    }
+
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+
+.tpw-main {
+    flex: 1;
+    background: radial-gradient( circle at top, rgba(103, 87, 232, 0.045), transparent 35% ), var(--tpw-bg);
+}
+
+
+.tpw-content {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 30px;
+}
+
+
+    /* ============================================================
+   COMMON PAGE TYPOGRAPHY
+   ============================================================ */
+
+    .tpw-content h1,
+    .tpw-content h2,
+    .tpw-content h3,
+    .tpw-content h4,
+    .tpw-content h5 {
+        color: var(--tpw-text);
+        font-weight: 700;
+    }
+
+
+    .tpw-content h1 {
+        letter-spacing: -0.8px;
+    }
+
+
+.text-muted {
+    color: var(--tpw-muted) !important;
+}
+
+
+/* ============================================================
+   MODERN CARD
+   ============================================================ */
+
+.card {
+    border: 1px solid var(--tpw-border);
+    border-radius: var(--tpw-radius);
+    background: var(--tpw-card);
+    box-shadow: var(--tpw-shadow);
+}
+
+
+.card-header {
+    padding: 17px 20px;
+    background: #fff;
+    border-bottom: 1px solid var(--tpw-border);
+    border-radius: var(--tpw-radius) var(--tpw-radius) 0 0 !important;
+}
+
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.btn {
+    border-radius: 10px;
+    font-weight: 600;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+
+
+.btn-primary,
+.tpw-primary-btn {
+    color: #fff !important;
+    border-color: var(--tpw-primary);
+    background: linear-gradient( 135deg, #7162ec, #5d4bde );
+    box-shadow: 0 7px 18px rgba(103, 87, 232, 0.2);
+}
+
+
+    .btn-primary:hover,
+    .tpw-primary-btn:hover {
+        border-color: var(--tpw-primary-dark);
+        background: linear-gradient( 135deg, #6253de, #4f3fd0 );
+        color: #fff;
+    }
+
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+
+.form-control,
+.form-select {
+    min-height: 44px;
+    border: 1px solid #dfe3ee;
+    border-radius: 10px;
+    background: #fff;
+    font-size: 14px;
+}
+
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: rgba(103, 87, 232, 0.55);
+        box-shadow: 0 0 0 4px rgba(103, 87, 232, 0.09);
+    }
+
+
+.form-label {
+    margin-bottom: 7px;
+    color: #525975;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   TABLE
+   ============================================================ */
+
+.table {
+    margin-bottom: 0;
+    color: #444b69;
+    font-size: 13px;
+}
+
+
+    .table > :not(caption) > * > * {
+        padding: 14px 16px;
+        border-bottom-color: #eef0f6;
+    }
+
+
+    .table thead th {
+        color: #717894;
+        background: #fafbfe;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+        border-bottom: 1px solid var(--tpw-border);
+    }
+
+
+    .table tbody tr {
+        transition: background 0.15s ease;
+    }
+
+
+        .table tbody tr:hover {
+            background: #fafaff;
+        }
+
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+
+.badge {
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+
+.bg-success {
+    background-color: var(--tpw-success) !important;
+}
+
+
+.bg-danger {
+    background-color: var(--tpw-danger) !important;
+}
+
+
+.bg-warning {
+    background-color: var(--tpw-warning) !important;
+}
+
+
+/* ============================================================
+   ALERTS
+   ============================================================ */
+
+.alert {
+    border: 0;
+    border-radius: 12px;
+}
+
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+.tpw-footer {
+    min-height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 15px 30px;
+    color: #858ba6;
+    background: #fff;
+    border-top: 1px solid var(--tpw-border);
+    font-size: 12px;
+}
+
+
+.tpw-footer-message {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+
+/* ============================================================
+   OVERLAY
+   ============================================================ */
+
+.tpw-sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1040;
+    display: none;
+    background: rgba(17, 19, 38, 0.55);
+    backdrop-filter: blur(2px);
+}
+
+
+    .tpw-sidebar-overlay.show {
+        display: block;
+    }
+
+
+/* ============================================================
+   PUBLIC NAVIGATION
+   ============================================================ */
+
+.tpw-public {
+    min-height: 100vh;
+    background: #f7f8fc;
+}
+
+
+.tpw-public-header {
+    background: rgba(255, 255, 255, 0.94);
+    border-bottom: 1px solid var(--tpw-border);
+}
+
+
+.tpw-public-nav {
+    min-height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.tpw-public-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    color: var(--tpw-text);
+    font-weight: 700;
+}
+
+
+    .tpw-public-brand:hover {
+        color: var(--tpw-text);
+    }
+
+
+.tpw-public-brand-icon {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    color: #fff;
+    background: linear-gradient( 135deg, #7162ec, #5645d6 );
+}
+
+
+.tpw-public-brand strong {
+    color: var(--tpw-primary);
+}
+
+
+.tpw-public-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+
+.tpw-login-link {
+    color: #59607c;
+    font-weight: 600;
+}
+
+
+    .tpw-login-link:hover {
+        color: var(--tpw-primary);
+    }
+
+
+.tpw-public-footer {
+    padding: 24px 0;
+    color: #858ba6;
+    background: #fff;
+    border-top: 1px solid var(--tpw-border);
+    font-size: 13px;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1199.98px) {
+
+    :root {
+        --tpw-sidebar-width: 225px;
+    }
+
+    .tpw-search {
+        width: 300px;
+    }
+}
+
+
+@media (max-width: 991.98px) {
+
+    .tpw-sidebar {
+        width: 260px;
+        transform: translateX(-100%);
+    }
+
+
+        .tpw-sidebar.show {
+            transform: translateX(0);
+        }
+
+
+    .tpw-app {
+        margin-left: 0;
+    }
+
+
+    .tpw-menu-button {
+        display: flex;
+    }
+
+
+    .tpw-topbar {
+        padding: 0 18px;
+    }
+
+
+    .tpw-content {
+        padding: 22px 18px;
+    }
+
+
+    .tpw-footer {
+        padding: 15px 18px;
+    }
+}
+
+
+@media (max-width: 767.98px) {
+
+    html {
+        font-size: 14px;
+    }
+
+
+    .tpw-topbar {
+        height: 64px;
+    }
+
+
+    .tpw-user-info {
+        display: none;
+    }
+
+
+    .tpw-user-chevron {
+        display: none;
+    }
+
+
+    .tpw-content {
+        padding: 18px 14px;
+    }
+
+
+    .tpw-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px;
+    }
+
+
+    .tpw-footer-message {
+        flex-wrap: wrap;
+    }
+
+
+    .tpw-public-nav {
+        min-height: 68px;
+    }
+}
+
+
+@media (max-width: 575.98px) {
+
+    .tpw-notification-button {
+        display: none;
+    }
+
+
+    .tpw-public-actions {
+        gap: 8px;
+    }
+
+
+    .tpw-login-link {
+        display: none;
+    }
+
+
+    .table-responsive {
+        border-radius: var(--tpw-radius);
+    }
+}
+
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+::-webkit-scrollbar-thumb {
+    background: #cdd2e0;
+    border-radius: 20px;
+}
+
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #aeb4c8;
+    }
+
+/* ============================================================
+   UI STEP 10
+   FINAL RESPONSIVE + CONSISTENCY POLISH
+   ============================================================ */
+
+
+/* ============================================================
+   GLOBAL SAFETY
+   ============================================================ */
+
+html,
+body {
+    max-width: 100%;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+img,
+svg {
+    max-width: 100%;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+/* ============================================================
+   MOBILE SIDEBAR BEHAVIOUR
+   ============================================================ */
+
+body.tpw-sidebar-open {
+    overflow: hidden;
+}
+
+.tpw-sidebar {
+    overscroll-behavior: contain;
+}
+
+.tpw-sidebar-overlay {
+    opacity: 0;
+    visibility: hidden;
+    display: block;
+    pointer-events: none;
+    transition: opacity .25s ease, visibility .25s ease;
+}
+
+    .tpw-sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+
+/* ============================================================
+   TOPBAR POLISH
+   ============================================================ */
+
+.tpw-topbar {
+    box-shadow: 0 3px 18px rgba(34, 40, 80, .035);
+}
+
+.tpw-topbar-left {
+    min-width: 0;
+}
+
+.tpw-topbar-right {
+    flex-shrink: 0;
+}
+
+.tpw-search {
+    max-width: 100%;
+}
+
+.tpw-user-menu {
+    max-width: 230px;
+}
+
+
+/* ============================================================
+   CONTENT SAFETY
+   Prevent large child elements from forcing horizontal overflow
+   ============================================================ */
+
+.tpw-app,
+.tpw-main,
+.tpw-content {
+    min-width: 0;
+}
+
+    .tpw-content > * {
+        min-width: 0;
+    }
+
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+
+.card {
+    overflow-wrap: break-word;
+}
+
+.card-body {
+    min-width: 0;
+}
+
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+    .table-responsive > .table {
+        width: 100%;
+    }
+
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+
+/* ============================================================
+   FORM CONSISTENCY
+   ============================================================ */
+
+.form-control,
+.form-select,
+.input-group-text {
+    transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+
+textarea.form-control {
+    resize: vertical;
+}
+
+input[type="file"].form-control {
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+
+.validation-summary-errors ul {
+    margin-bottom: 0;
+}
+
+
+/* ============================================================
+   BUTTON ACCESSIBILITY
+   ============================================================ */
+
+.btn,
+.tpw-nav-link,
+.tpw-user-menu,
+.tpw-menu-button,
+.tpw-notification-button {
+    touch-action: manipulation;
+}
+
+    .btn:focus-visible,
+    .tpw-nav-link:focus-visible,
+    .tpw-user-menu:focus-visible,
+    .tpw-menu-button:focus-visible,
+    .tpw-notification-button:focus-visible {
+        outline: 3px solid rgba(103, 87, 232, .22);
+        outline-offset: 2px;
+    }
+
+
+/* ============================================================
+   DROPDOWN
+   ============================================================ */
+
+.tpw-profile-dropdown {
+    z-index: 1080;
+}
+
+    .tpw-profile-dropdown .dropdown-item {
+        transition: background-color .15s ease, color .15s ease;
+    }
+
+
+/* ============================================================
+   LARGE DESKTOP
+   ============================================================ */
+
+@media (min-width: 1400px) {
+
+    .tpw-content {
+        padding: 34px;
+    }
+}
+
+
+/* ============================================================
+   TABLET
+   ============================================================ */
+
+@media (max-width: 991.98px) {
+
+    .tpw-sidebar {
+        width: min(280px, 86vw);
+        box-shadow: 15px 0 45px rgba(13, 15, 35, .22);
+    }
+
+    .tpw-brand {
+        min-height: 82px;
+        padding: 16px 18px;
+    }
+
+    .tpw-brand-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        font-size: 20px;
+    }
+
+    .tpw-brand-text {
+        font-size: 16px;
+    }
+
+        .tpw-brand-text strong {
+            font-size: 19px;
+        }
+
+    .tpw-sidebar-nav {
+        padding: 8px 12px 18px;
+    }
+
+    .tpw-nav-link {
+        min-height: 47px;
+        padding: 9px 13px;
+    }
+
+    .tpw-sidebar-bottom {
+        padding: 15px 15px 22px;
+    }
+
+    .tpw-sidebar-quote {
+        padding: 18px 15px;
+    }
+
+    .tpw-content {
+        width: 100%;
+    }
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 767.98px) {
+
+    .tpw-topbar {
+        min-height: 64px;
+        padding: 0 14px;
+    }
+
+    .tpw-topbar-left,
+    .tpw-topbar-right {
+        gap: 8px;
+    }
+
+    .tpw-menu-button {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+    }
+
+    .tpw-avatar {
+        width: 37px;
+        height: 37px;
+        font-size: 13px;
+    }
+
+    .tpw-user-menu {
+        padding: 3px;
+    }
+
+    .tpw-profile-dropdown {
+        min-width: 185px;
+    }
+
+    .tpw-content {
+        padding: 18px 14px 24px;
+    }
+
+        .tpw-content h1 {
+            font-size: 1.65rem;
+            letter-spacing: -.5px;
+        }
+
+        .tpw-content h2 {
+            font-size: 1.4rem;
+        }
+
+    .card {
+        border-radius: 14px;
+    }
+
+    .card-header {
+        padding: 15px 16px;
+    }
+
+    .card-body {
+        padding: 16px;
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 16px;
+    }
+
+    .btn {
+        min-height: 42px;
+    }
+
+    .table {
+        font-size: 12px;
+    }
+
+        .table > :not(caption) > * > * {
+            padding: 12px 13px;
+        }
+
+    .tpw-footer {
+        gap: 7px;
+        font-size: 11px;
+    }
+}
+
+
+/* ============================================================
+   SMALL MOBILE
+   ============================================================ */
+
+@media (max-width: 575.98px) {
+
+    .tpw-sidebar {
+        width: min(275px, 88vw);
+    }
+
+    .tpw-content {
+        padding: 15px 11px 22px;
+    }
+
+    .tpw-topbar {
+        padding: env(safe-area-inset-top, 0) 11px 0;
+    }
+
+    .tpw-profile-dropdown {
+        max-width: calc(100vw - 22px);
+    }
+
+    .card {
+        border-radius: 13px;
+    }
+
+    .table-responsive {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .tpw-footer {
+        padding: 14px 12px;
+    }
+
+    .tpw-footer-message {
+        gap: 5px;
+    }
+}
+
+
+/* ============================================================
+   VERY SMALL DEVICES
+   ============================================================ */
+
+@media (max-width: 380px) {
+
+    .tpw-content {
+        padding-left: 9px;
+        padding-right: 9px;
+    }
+
+    .tpw-menu-button {
+        width: 37px;
+        height: 37px;
+    }
+
+    .tpw-avatar {
+        width: 35px;
+        height: 35px;
+    }
+}
+
+
+/* ============================================================
+   REDUCED MOTION ACCESSIBILITY
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}

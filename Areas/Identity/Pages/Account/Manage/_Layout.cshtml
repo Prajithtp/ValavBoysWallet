@@ -1,0 +1,30 @@
+@inject IConfiguration Configuration
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+    var accountPage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
+}
+<link rel="stylesheet" href="~/css/account.css" asp-append-version="true" />
+<section class="account-shell">
+    <header class="account-heading">
+        <span class="account-eyebrow">YOUR SPACE</span>
+        <h1>Account settings</h1>
+        <p>A little more you. Manage your profile and keep your account secure.</p>
+    </header>
+    <div class="account-grid">
+        <nav class="account-nav" aria-label="Account settings">
+            <a class="@(accountPage.EndsWith("/Index") ? "active" : "")" asp-page="./Index"><i class="bi bi-person"></i> My profile</a>
+            @if (Configuration.GetValue<bool>("Email:Enabled"))
+            {
+            <a class="@(accountPage.EndsWith("/Email") ? "active" : "")" asp-page="./Email"><i class="bi bi-envelope"></i> Email address</a>
+            }
+            <a class="@(accountPage.EndsWith("/ChangePassword") || accountPage.EndsWith("/SetPassword") ? "active" : "")" asp-page="./ChangePassword"><i class="bi bi-shield-lock"></i> Password</a>
+            <a asp-page="./TwoFactorAuthentication"><i class="bi bi-phone"></i> Two-step verification</a>
+            <a asp-page="./PersonalData"><i class="bi bi-file-earmark-lock"></i> Personal data</a>
+            <div class="account-nav-note"><i class="bi bi-lock"></i><p>Your account details stay private. Your profile photo is visible in your account.</p></div>
+        </nav>
+        <div class="account-content">@RenderBody()</div>
+    </div>
+</section>
+@section Scripts {
+    @await RenderSectionAsync("Scripts", required: false)
+}

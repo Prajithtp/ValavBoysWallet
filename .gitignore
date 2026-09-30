@@ -1,0 +1,33 @@
+# Build and editor files
+**/bin/
+**/obj/
+.vs/
+*.user
+*.suo
+*.log
+publish/
+
+# Private settings and hosting credentials
+appsettings.Production.json
+appsettings.*.local.json
+secrets.json
+.env
+.env.*
+Properties/PublishProfiles/
+Properties/serviceDependencies*.json
+*.publishSettings
+*.pfx
+*.p12
+*.pem
+*.key
+
+# User data and database backups
+wwwroot/uploads/
+*.db
+*.db-shm
+*.db-wal
+*.mdf
+*.ldf
+*.bak
+*.bacpac
+*.zip

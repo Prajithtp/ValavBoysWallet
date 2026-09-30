@@ -1,0 +1,1933 @@
+@model ValavBoysWallet.ViewModels.AdminReportViewModel
+
+@{
+    ViewData["Title"] = "Admin Reports";
+
+    var transactions = Model.Transactions;
+
+    var hasFilters =
+        Model.FromDate.HasValue ||
+        Model.ToDate.HasValue ||
+        !string.IsNullOrWhiteSpace(Model.TransactionType) ||
+        !string.IsNullOrWhiteSpace(Model.Status);
+
+    var resultCount = transactions?.Count ?? 0;
+}
+
+<style>
+
+    /* =========================================================
+           REPORTS PAGE
+           ========================================================= */
+
+    .reports-page {
+        width: 100%;
+    }
+
+
+    /* =========================================================
+           PAGE HEADER
+           ========================================================= */
+
+    .reports-page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 26px;
+    }
+
+    .reports-title-wrap {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .reports-title-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 14px;
+        color: #6757e8;
+        background: #eeeaff;
+        font-size: 21px;
+    }
+
+    .reports-page-header h1 {
+        margin: 0;
+        color: #20243f;
+        font-size: 27px;
+        font-weight: 750;
+        letter-spacing: -.7px;
+    }
+
+    .reports-page-header p {
+        margin: 6px 0 0;
+        color: #8c92a8;
+        font-size: 13px;
+    }
+
+    .reports-dashboard-btn {
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 9px 15px;
+        border: 1px solid #e0e3ed;
+        border-radius: 11px;
+        color: #656c88;
+        background: #fff;
+        font-size: 12px;
+        font-weight: 650;
+        text-decoration: none;
+        transition: all .2s ease;
+        white-space: nowrap;
+    }
+
+        .reports-dashboard-btn:hover {
+            color: #6757e8;
+            border-color: #d3cdf8;
+            background: #fbfaff;
+            transform: translateY(-1px);
+        }
+
+
+    /* =========================================================
+           FILTER PANEL
+           ========================================================= */
+
+    .report-filter-panel {
+        margin-bottom: 22px;
+        padding: 21px 22px;
+        border: 1px solid #e8eaf2;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 8px 28px rgba(37, 44, 80, .05);
+    }
+
+    .report-filter-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 18px;
+    }
+
+    .report-filter-heading-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .report-filter-icon {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 10px;
+        color: #6757e8;
+        background: #eeeaff;
+        font-size: 14px;
+    }
+
+    .report-filter-heading h5 {
+        margin: 0;
+        color: #30354f;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .report-filter-heading p {
+        margin: 3px 0 0;
+        color: #999eb2;
+        font-size: 10px;
+    }
+
+    .filter-active-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 9px;
+        border-radius: 20px;
+        color: #6152d4;
+        background: #eeeaff;
+        font-size: 9px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .report-form-label {
+        display: block;
+        margin-bottom: 7px;
+        color: #656b83;
+        font-size: 10px;
+        font-weight: 650;
+    }
+
+    .report-filter-panel .form-control,
+    .report-filter-panel .form-select {
+        min-height: 42px;
+        padding: 9px 12px;
+        border: 1px solid #e1e4ed;
+        border-radius: 10px;
+        color: #454a63;
+        background-color: #fbfcfe;
+        font-size: 11px;
+        box-shadow: none;
+    }
+
+        .report-filter-panel .form-control:focus,
+        .report-filter-panel .form-select:focus {
+            border-color: #a89df1;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(103, 87, 232, .09);
+        }
+
+    .report-filter-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 9px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+    }
+
+    .report-filter-btn,
+    .report-clear-btn {
+        min-height: 39px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 8px 14px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: 650;
+        transition: all .2s ease;
+    }
+
+    .report-filter-btn {
+        border: 1px solid #6757e8;
+        color: #fff;
+        background: #6757e8;
+    }
+
+        .report-filter-btn:hover {
+            color: #fff;
+            border-color: #5949d7;
+            background: #5949d7;
+            transform: translateY(-1px);
+        }
+
+    .report-clear-btn {
+        border: 1px solid #e0e3ed;
+        color: #70768d;
+        background: #fff;
+        text-decoration: none;
+    }
+
+        .report-clear-btn:hover {
+            color: #6757e8;
+            border-color: #d2ccf8;
+            background: #faf9ff;
+        }
+
+
+    /* =========================================================
+           FINANCIAL SUMMARY
+           ========================================================= */
+
+    .report-financial-row {
+        margin-bottom: 18px;
+    }
+
+    .report-balance-card {
+        position: relative;
+        height: 100%;
+        min-height: 158px;
+        overflow: hidden;
+        padding: 22px;
+        border-radius: 18px;
+        color: #fff;
+        background: linear-gradient( 135deg, #7162ec 0%, #5e4cde 55%, #4e3bca 100% );
+        box-shadow: 0 13px 30px rgba(94, 75, 222, .20);
+    }
+
+        .report-balance-card::before {
+            content: "";
+            position: absolute;
+            width: 155px;
+            height: 155px;
+            top: -78px;
+            right: -40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .08);
+        }
+
+        .report-balance-card::after {
+            content: "";
+            position: absolute;
+            width: 105px;
+            height: 105px;
+            right: 40px;
+            bottom: -70px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .06);
+        }
+
+    .report-balance-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .report-financial-card {
+        height: 100%;
+        min-height: 158px;
+        padding: 22px;
+        border: 1px solid #e9ebf3;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 8px 28px rgba(37, 44, 80, .05);
+        transition: all .2s ease;
+    }
+
+        .report-financial-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 13px 32px rgba(37, 44, 80, .08);
+        }
+
+    .report-financial-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 18px;
+    }
+
+    .report-financial-label {
+        margin: 0;
+        color: #8d93aa;
+        font-size: 10px;
+        font-weight: 650;
+        text-transform: uppercase;
+        letter-spacing: .25px;
+    }
+
+    .report-balance-card .report-financial-label {
+        color: rgba(255, 255, 255, .76);
+    }
+
+    .report-financial-icon {
+        width: 41px;
+        height: 41px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 12px;
+        font-size: 17px;
+    }
+
+    .report-balance-card .report-financial-icon {
+        color: #fff;
+        background: rgba(255, 255, 255, .14);
+    }
+
+    .report-financial-icon.green {
+        color: #188d62;
+        background: #e3f8ef;
+    }
+
+    .report-financial-icon.red {
+        color: #dc4b60;
+        background: #ffe7eb;
+    }
+
+    .report-financial-value {
+        margin: 0;
+        color: #fff;
+        font-size: 27px;
+        font-weight: 750;
+        letter-spacing: -.5px;
+    }
+
+    .report-financial-card .report-financial-value.green {
+        color: #159566;
+    }
+
+    .report-financial-card .report-financial-value.red {
+        color: #df4b60;
+    }
+
+    .report-financial-note {
+        display: block;
+        margin-top: 8px;
+        color: #999eb2;
+        font-size: 9px;
+        line-height: 1.5;
+    }
+
+    .report-balance-card .report-financial-note {
+        color: rgba(255, 255, 255, .70);
+    }
+
+    .financial-scope-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 9px;
+        padding: 5px 8px;
+        border-radius: 20px;
+        color: #6152d4;
+        background: #f0edff;
+        font-size: 8px;
+        font-weight: 700;
+    }
+
+
+    /* =========================================================
+           TRANSACTION STATISTICS
+           ========================================================= */
+
+    .report-stat-row {
+        margin-bottom: 22px;
+    }
+
+    .report-stat-card {
+        height: 100%;
+        padding: 18px;
+        border: 1px solid #e9ebf3;
+        border-radius: 15px;
+        background: #fff;
+        box-shadow: 0 6px 22px rgba(37, 44, 80, .04);
+        transition: all .2s ease;
+    }
+
+        .report-stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 27px rgba(37, 44, 80, .07);
+        }
+
+    .report-stat-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .report-stat-label {
+        display: block;
+        margin-bottom: 5px;
+        color: #969baf;
+        font-size: 9px;
+        font-weight: 600;
+    }
+
+    .report-stat-value {
+        margin: 0;
+        color: #343950;
+        font-size: 21px;
+        font-weight: 750;
+    }
+
+        .report-stat-value.green {
+            color: #159566;
+        }
+
+        .report-stat-value.yellow {
+            color: #c48929;
+        }
+
+        .report-stat-value.red {
+            color: #df4b60;
+        }
+
+    .report-stat-icon {
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        font-size: 15px;
+    }
+
+    .stat-purple {
+        color: #6757e8;
+        background: #eeeaff;
+    }
+
+    .stat-green {
+        color: #16875d;
+        background: #e3f7ed;
+    }
+
+    .stat-yellow {
+        color: #b37b24;
+        background: #fff2d9;
+    }
+
+    .stat-red {
+        color: #d4485e;
+        background: #ffe6ea;
+    }
+
+
+    /* =========================================================
+           HISTORY PANEL
+           ========================================================= */
+
+    .report-history-panel {
+        overflow: hidden;
+        border: 1px solid #e8eaf2;
+        border-radius: 19px;
+        background: #fff;
+        box-shadow: 0 10px 32px rgba(37, 44, 80, .055);
+    }
+
+    .report-history-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 20px 22px;
+        border-bottom: 1px solid #edf0f5;
+    }
+
+        .report-history-header h5 {
+            margin: 0 0 4px;
+            color: #252a47;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .report-history-header p {
+            margin: 0;
+            color: #9297ad;
+            font-size: 10px;
+        }
+
+    .report-result-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 11px;
+        border-radius: 20px;
+        color: #6152d4;
+        background: #eeeaff;
+        font-size: 9px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .report-result-count.filtered {
+            color: #9a681a;
+            background: #fff2d9;
+        }
+
+
+    /* =========================================================
+           TABLE
+           ========================================================= */
+
+    .report-table {
+        width: 100%;
+        margin: 0;
+    }
+
+        .report-table thead th {
+            padding: 12px 15px;
+            color: #8d92a8;
+            background: #fafbfe;
+            border: 0;
+            border-bottom: 1px solid #edf0f5;
+            font-size: 8px;
+            font-weight: 650;
+            text-transform: uppercase;
+            letter-spacing: .35px;
+            white-space: nowrap;
+        }
+
+        .report-table tbody td {
+            padding: 15px;
+            color: #555b74;
+            border-bottom: 1px solid #f0f1f5;
+            font-size: 10px;
+            vertical-align: middle;
+        }
+
+        .report-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .report-table tbody tr {
+            transition: background .15s ease;
+        }
+
+            .report-table tbody tr:hover {
+                background: #fbfbfe;
+            }
+
+
+    /* =========================================================
+           MEMBER
+           ========================================================= */
+
+    .report-member {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        min-width: 170px;
+    }
+
+    .report-member-avatar {
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 11px;
+        color: #fff;
+        background: linear-gradient(135deg, #7565ed, #5948d6);
+        font-size: 10px;
+        font-weight: 750;
+    }
+
+    .report-member-name {
+        max-width: 130px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #3f445e;
+        font-weight: 650;
+    }
+
+    .report-member-email {
+        max-width: 145px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-top: 3px;
+        color: #999eb2;
+        font-size: 8px;
+    }
+
+
+    /* =========================================================
+           TYPE
+           ========================================================= */
+
+    .report-type {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 8px;
+        border-radius: 20px;
+        font-size: 8px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .report-type.deposit {
+            color: #16875d;
+            background: #e3f7ed;
+        }
+
+        .report-type.expense {
+            color: #cf4258;
+            background: #ffe6ea;
+        }
+
+
+    /* =========================================================
+           DETAILS
+           ========================================================= */
+
+    .report-details {
+        min-width: 135px;
+        max-width: 190px;
+    }
+
+    .report-details-main {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #454a63;
+        font-weight: 650;
+    }
+
+    .report-details-sub {
+        display: block;
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-top: 4px;
+        color: #999eb2;
+        font-size: 8px;
+    }
+
+
+    /* =========================================================
+           AMOUNT
+           ========================================================= */
+
+    .report-amount {
+        font-size: 10px;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+        .report-amount.deposit {
+            color: #159566;
+        }
+
+        .report-amount.expense {
+            color: #df4b60;
+        }
+
+
+    /* =========================================================
+           STATUS
+           ========================================================= */
+
+    .report-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 8px;
+        border-radius: 20px;
+        font-size: 8px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .report-status::before {
+            content: "";
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+        }
+
+        .report-status.approved {
+            color: #16875d;
+            background: #e3f7ed;
+        }
+
+            .report-status.approved::before {
+                background: #1ca56f;
+            }
+
+        .report-status.pending {
+            color: #ae741e;
+            background: #fff2d9;
+        }
+
+            .report-status.pending::before {
+                background: #e4a038;
+            }
+
+        .report-status.rejected {
+            color: #cf4258;
+            background: #ffe6ea;
+        }
+
+            .report-status.rejected::before {
+                background: #df4b60;
+            }
+
+
+    /* =========================================================
+           DATES
+           ========================================================= */
+
+    .report-date-main {
+        color: #4c526b;
+        font-weight: 650;
+        white-space: nowrap;
+    }
+
+    .report-date-sub {
+        display: block;
+        margin-top: 3px;
+        color: #999eb2;
+        font-size: 8px;
+        white-space: nowrap;
+    }
+
+    .report-empty-date {
+        color: #b2b6c5;
+    }
+
+
+    /* =========================================================
+           RESULT
+           ========================================================= */
+
+    .report-result {
+        min-width: 115px;
+    }
+
+    .report-result-title {
+        color: #4a5069;
+        font-weight: 650;
+    }
+
+        .report-result-title.rejected {
+            color: #df4b60;
+        }
+
+    .report-result-sub {
+        display: block;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-top: 3px;
+        color: #999eb2;
+        font-size: 8px;
+    }
+
+
+    /* =========================================================
+           EMPTY STATE
+           ========================================================= */
+
+    .report-empty-state {
+        padding: 65px 20px;
+        text-align: center;
+    }
+
+    .report-empty-icon {
+        width: 68px;
+        height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        border-radius: 20px;
+        color: #6757e8;
+        background: #eeeaff;
+        font-size: 27px;
+    }
+
+    .report-empty-state h5 {
+        margin: 0 0 6px;
+        color: #333850;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .report-empty-state p {
+        margin: 0 auto 16px;
+        max-width: 420px;
+        color: #969baf;
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+
+    /* =========================================================
+           FOOT MESSAGE
+           ========================================================= */
+
+    .report-foot-message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        margin-top: 20px;
+        color: #999eb2;
+        font-size: 9px;
+        text-align: center;
+    }
+
+        .report-foot-message i {
+            color: #6757e8;
+        }
+
+
+    /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+    @@media (max-width: 1199.98px) {
+
+        .report-table {
+            min-width: 1080px;
+        }
+
+        .table-responsive {
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+
+
+    @@media (max-width: 991.98px) {
+
+        .report-balance-card,
+        .report-financial-card {
+            min-height: 150px;
+        }
+    }
+
+
+    @@media (max-width: 767.98px) {
+
+        .reports-page-header {
+            flex-direction: column;
+            gap: 16px;
+        }
+
+            .reports-page-header h1 {
+                font-size: 23px;
+            }
+
+        .reports-dashboard-btn {
+            width: 100%;
+        }
+
+        .report-filter-heading {
+            align-items: flex-start;
+        }
+
+        .report-history-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .report-result-count {
+            align-self: flex-start;
+        }
+    }
+
+
+    @@media (max-width: 575.98px) {
+
+        .reports-title-icon {
+            width: 44px;
+            height: 44px;
+            font-size: 19px;
+        }
+
+        .reports-page-header p {
+            font-size: 11px;
+        }
+
+        .report-filter-panel {
+            padding: 18px;
+        }
+
+        .report-filter-heading {
+            flex-direction: column;
+        }
+
+        .filter-active-pill {
+            align-self: flex-start;
+        }
+
+        .report-filter-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .report-filter-btn,
+        .report-clear-btn {
+            width: 100%;
+        }
+
+        .report-balance-card,
+        .report-financial-card {
+            padding: 19px;
+        }
+
+        .report-financial-value {
+            font-size: 23px;
+        }
+
+        .report-history-header {
+            padding: 18px;
+        }
+
+        .report-table thead th,
+        .report-table tbody td {
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        .report-empty-state {
+            padding: 48px 18px;
+        }
+    }
+
+</style>
+
+
+<div class="reports-page">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
+
+    <div class="reports-page-header">
+
+        <div class="reports-title-wrap">
+
+            <div class="reports-title-icon">
+                <i class="bi bi-bar-chart-line"></i>
+            </div>
+
+            <div>
+
+                <h1>
+                    Admin Reports
+                </h1>
+
+                <p>
+                    Financial summaries, wallet activity and transaction history.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <a asp-controller="Admin"
+           asp-action="Dashboard"
+           class="reports-dashboard-btn">
+
+            <i class="bi bi-grid-1x2-fill"></i>
+
+            Admin Dashboard
+
+        </a>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         FILTERS
+         ===================================================== -->
+
+    <div class="report-filter-panel">
+
+        <div class="report-filter-heading">
+
+            <div class="report-filter-heading-left">
+
+                <div class="report-filter-icon">
+                    <i class="bi bi-funnel"></i>
+                </div>
+
+                <div>
+
+                    <h5>
+                        Filter Transactions
+                    </h5>
+
+                    <p>
+                        Narrow the report by submitted date,
+                        transaction type or status.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            @if (hasFilters)
+            {
+                <span class="filter-active-pill">
+
+                    <i class="bi bi-check-circle"></i>
+
+                    Filters Active
+
+                </span>
+            }
+
+        </div>
+
+
+        <form asp-controller="Admin"
+              asp-action="Reports"
+              method="get">
+
+            <div class="row g-3">
+
+
+                <!-- FROM -->
+                <div class="col-xl-3 col-md-6">
+
+                    <label asp-for="FromDate"
+                           class="report-form-label">
+
+                        Submitted From
+
+                    </label>
+
+                    <input asp-for="FromDate"
+                           type="date"
+                           class="form-control" />
+
+                </div>
+
+
+                <!-- TO -->
+                <div class="col-xl-3 col-md-6">
+
+                    <label asp-for="ToDate"
+                           class="report-form-label">
+
+                        Submitted To
+
+                    </label>
+
+                    <input asp-for="ToDate"
+                           type="date"
+                           class="form-control" />
+
+                </div>
+
+
+                <!-- TYPE -->
+                <div class="col-xl-3 col-md-6">
+
+                    <label asp-for="TransactionType"
+                           class="report-form-label">
+
+                        Transaction Type
+
+                    </label>
+
+                    <select asp-for="TransactionType"
+                            class="form-select">
+
+                        <option value="">
+                            All Types
+                        </option>
+
+                        <option value="Deposit">
+                            Deposit
+                        </option>
+
+                        <option value="Withdrawal">
+                            Withdrawal
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- STATUS -->
+                <div class="col-xl-3 col-md-6">
+
+                    <label asp-for="Status"
+                           class="report-form-label">
+
+                        Status
+
+                    </label>
+
+                    <select asp-for="Status"
+                            class="form-select">
+
+                        <option value="">
+                            All Statuses
+                        </option>
+
+                        <option value="Approved">
+                            Approved
+                        </option>
+
+                        <option value="Pending">
+                            Pending
+                        </option>
+
+                        <option value="Rejected">
+                            Rejected
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="report-filter-actions">
+
+                <a asp-controller="Admin"
+                   asp-action="Reports"
+                   class="report-clear-btn">
+
+                    <i class="bi bi-arrow-counterclockwise"></i>
+
+                    Clear Filters
+
+                </a>
+
+
+                <button type="submit"
+                        class="report-filter-btn">
+
+                    <i class="bi bi-funnel-fill"></i>
+
+                    Apply Filters
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         FINANCIAL SUMMARY
+         ===================================================== -->
+
+    <div class="row g-3 report-financial-row">
+
+
+        <!-- CURRENT GROUP BALANCE -->
+        <div class="col-lg-4">
+
+            <div class="report-balance-card">
+
+                <div class="report-balance-content">
+
+                    <div class="report-financial-top">
+
+                        <p class="report-financial-label">
+                            Current Group Balance
+                        </p>
+
+                        <div class="report-financial-icon">
+                            <i class="bi bi-wallet2"></i>
+                        </div>
+
+                    </div>
+
+
+                    <h3 class="report-financial-value">
+                        ₹@Model.GroupBalance.ToString("N2")
+                    </h3>
+
+
+                    <span class="report-financial-note">
+                        Live available balance of the shared wallet.
+                        This value does not change with report filters.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- APPROVED DEPOSITS -->
+        <div class="col-lg-4 col-md-6">
+
+            <div class="report-financial-card">
+
+                <div class="report-financial-top">
+
+                    <p class="report-financial-label">
+                        Approved Deposits
+                    </p>
+
+                    <div class="report-financial-icon green">
+                        <i class="bi bi-arrow-down-left"></i>
+                    </div>
+
+                </div>
+
+
+                <h3 class="report-financial-value green">
+                    + ₹@Model.TotalDeposits.ToString("N2")
+                </h3>
+
+
+                @if (hasFilters)
+                {
+                    <span class="report-financial-note">
+                        Approved deposits matching the selected report filters.
+                    </span>
+
+                    <span class="financial-scope-badge">
+
+                        <i class="bi bi-funnel-fill"></i>
+
+                        Filtered total
+
+                    </span>
+                }
+                else
+                {
+                    <span class="report-financial-note">
+                        Total approved money added to the wallet.
+                    </span>
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- APPROVED EXPENSES -->
+        <div class="col-lg-4 col-md-6">
+
+            <div class="report-financial-card">
+
+                <div class="report-financial-top">
+
+                    <p class="report-financial-label">
+                        Approved Expenses
+                    </p>
+
+                    <div class="report-financial-icon red">
+                        <i class="bi bi-arrow-up-right"></i>
+                    </div>
+
+                </div>
+
+
+                <h3 class="report-financial-value red">
+                    - ₹@Model.TotalExpenses.ToString("N2")
+                </h3>
+
+
+                @if (hasFilters)
+                {
+                    <span class="report-financial-note">
+                        Approved expenses matching the selected report filters.
+                    </span>
+
+                    <span class="financial-scope-badge">
+
+                        <i class="bi bi-funnel-fill"></i>
+
+                        Filtered total
+
+                    </span>
+                }
+                else
+                {
+                    <span class="report-financial-note">
+                        Total approved money spent from the wallet.
+                    </span>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         TRANSACTION STATISTICS
+         ===================================================== -->
+
+    <div class="row g-3 report-stat-row">
+
+
+        <!-- TOTAL -->
+        <div class="col-xl-3 col-md-6">
+
+            <div class="report-stat-card">
+
+                <div class="report-stat-inner">
+
+                    <div>
+
+                        <span class="report-stat-label">
+                            Total Transactions
+                        </span>
+
+                        <h4 class="report-stat-value">
+                            @Model.TotalTransactions
+                        </h4>
+
+                    </div>
+
+
+                    <div class="report-stat-icon stat-purple">
+                        <i class="bi bi-receipt"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- APPROVED -->
+        <div class="col-xl-3 col-md-6">
+
+            <div class="report-stat-card">
+
+                <div class="report-stat-inner">
+
+                    <div>
+
+                        <span class="report-stat-label">
+                            Approved
+                        </span>
+
+                        <h4 class="report-stat-value green">
+                            @Model.ApprovedTransactions
+                        </h4>
+
+                    </div>
+
+
+                    <div class="report-stat-icon stat-green">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PENDING -->
+        <div class="col-xl-3 col-md-6">
+
+            <div class="report-stat-card">
+
+                <div class="report-stat-inner">
+
+                    <div>
+
+                        <span class="report-stat-label">
+                            Pending
+                        </span>
+
+                        <h4 class="report-stat-value yellow">
+                            @Model.PendingTransactions
+                        </h4>
+
+                    </div>
+
+
+                    <div class="report-stat-icon stat-yellow">
+                        <i class="bi bi-clock"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- REJECTED -->
+        <div class="col-xl-3 col-md-6">
+
+            <div class="report-stat-card">
+
+                <div class="report-stat-inner">
+
+                    <div>
+
+                        <span class="report-stat-label">
+                            Rejected
+                        </span>
+
+                        <h4 class="report-stat-value red">
+                            @Model.RejectedTransactions
+                        </h4>
+
+                    </div>
+
+
+                    <div class="report-stat-icon stat-red">
+                        <i class="bi bi-x-circle"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         TRANSACTION HISTORY
+         ===================================================== -->
+
+    <div class="report-history-panel">
+
+
+        <div class="report-history-header">
+
+            <div>
+
+                <h5>
+                    Transaction History
+                </h5>
+
+                @if (hasFilters)
+                {
+                    <p>
+                        Showing transactions matching the selected report filters.
+                    </p>
+                }
+                else
+                {
+                    <p>
+                        Review submitted deposits, expenses
+                        and their approval result.
+                    </p>
+                }
+
+            </div>
+
+
+            @if (hasFilters)
+            {
+                <span class="report-result-count filtered">
+
+                    <i class="bi bi-funnel-fill"></i>
+
+                    @resultCount Filtered
+                    @(resultCount == 1 ? "Result" : "Results")
+
+                </span>
+            }
+            else
+            {
+                <span class="report-result-count">
+
+                    <i class="bi bi-list-ul"></i>
+
+                    @resultCount
+                    @(resultCount == 1 ? "Result" : "Results")
+
+                </span>
+            }
+
+        </div>
+
+
+
+        @if (transactions != null && transactions.Any())
+        {
+
+            <div class="table-responsive">
+
+                <table class="report-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Member
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Details
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Transaction Date
+                            </th>
+
+                            <th>
+                                Submitted
+                            </th>
+
+                            <th>
+                                Result
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var item in transactions)
+                        {
+                            var isDeposit =
+                            item.Type == "Deposit";
+
+                            var memberInitial =
+                            !string.IsNullOrWhiteSpace(item.MemberName)
+                            ? item.MemberName.Substring(0, 1).ToUpper()
+                            : "M";
+
+                            <tr>
+
+
+                                <!-- MEMBER -->
+                                <td>
+
+                                    <div class="report-member">
+
+                                        <div class="report-member-avatar">
+                                            @memberInitial
+                                        </div>
+
+                                        <div>
+
+                                            <div class="report-member-name">
+                                                @item.MemberName
+                                            </div>
+
+                                            <div class="report-member-email">
+                                                @item.MemberEmail
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- TYPE -->
+                                <td>
+
+                                    @if (isDeposit)
+                                    {
+                                        <span class="report-type deposit">
+
+                                            <i class="bi bi-arrow-down-left"></i>
+
+                                            Deposit
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="report-type expense">
+
+                                            <i class="bi bi-arrow-up-right"></i>
+
+                                            Expense
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- DETAILS -->
+                                <td>
+
+                                    <div class="report-details">
+
+                                        @if (isDeposit)
+                                        {
+                                            <div class="report-details-main">
+
+                                                @(string.IsNullOrWhiteSpace(
+                                                                                    item.ReferenceNumber)
+                                                                                    ? "-"
+                                                                                    : item.ReferenceNumber)
+
+                                </div>
+
+                                            <span class="report-details-sub">
+                                                Payment Reference
+                                            </span>
+                                                                }
+                                        else
+                                        {
+                                            <div class="report-details-main">
+
+                                                @(string.IsNullOrWhiteSpace(
+                                                                                    item.Category)
+                                                                                    ? "Expense"
+                                                                                    : item.Category)
+
+                                </div>
+
+                                @if (!string.IsNullOrWhiteSpace(
+                                                                item.Purpose))
+                                            {
+                                                <span class="report-details-sub"
+                                                      title="@item.Purpose">
+
+                                                    @item.Purpose
+
+                                                </span>
+                                            }
+                                        }
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- AMOUNT -->
+                                <td>
+
+                                    @if (isDeposit)
+                                    {
+                                        <span class="report-amount deposit">
+
+                                            + ₹@item.Amount.ToString("N2")
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="report-amount expense">
+
+                                            - ₹@item.Amount.ToString("N2")
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- STATUS -->
+                                <td>
+
+                                    @if (item.Status == "Approved")
+                                    {
+                                        <span class="report-status approved">
+                                            Approved
+                                        </span>
+                                    }
+                                    else if (item.Status == "Pending")
+                                    {
+                                        <span class="report-status pending">
+                                            Pending
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="report-status rejected">
+                                            Rejected
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- TRANSACTION DATE -->
+                                <td>
+
+                                    @if (item.TransactionDate.HasValue)
+                                    {
+                                        <div class="report-date-main">
+
+                                            @(item.TransactionDate.Value
+                                                                            .ToString("dd MMM yyyy"))
+
+                            </div>
+
+                            @if (isDeposit)
+                                        {
+                                            <span class="report-date-sub">
+                                                Payment date
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="report-empty-date">
+                                            —
+                                        </span>
+                                    }
+
+                            </td>
+
+
+                            <!-- SUBMITTED -->
+                            <td>
+
+                                <div class="report-date-main">
+
+                                    @(item.CreatedDate
+                                                                    .ToString("dd MMM yyyy"))
+
+                                </div>
+
+                                <span class="report-date-sub">
+
+                                    @(item.CreatedDate
+                                                                    .ToString("hh:mm tt"))
+
+                            </span>
+
+                                </td>
+
+
+                                <!-- RESULT -->
+                                <td>
+
+                                    <div class="report-result">
+
+                                @if (item.Status == "Approved")
+                                        {
+                                            <div class="report-result-title">
+                                                Approved
+                                            </div>
+
+                                            @if (item.ApprovedDate.HasValue)
+                                            {
+                                                <span class="report-result-sub">
+
+                                                    @(item.ApprovedDate.Value
+                                                                                        .ToString("dd MMM yyyy"))
+
+                                </span>
+                                                                }
+                                        }
+                                        else if (item.Status == "Rejected")
+                                        {
+                                            <div class="report-result-title rejected">
+                                                Rejected
+                                            </div>
+
+                                            @if (!string.IsNullOrWhiteSpace(
+                                                                            item.RejectionReason))
+                                            {
+                                                <span class="report-result-sub"
+                                                      title="@item.RejectionReason">
+
+                                                    @item.RejectionReason
+
+                                                </span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="report-result-title">
+                                                Awaiting approval
+                                            </div>
+
+                                            <span class="report-result-sub">
+                                                Pending review
+                                            </span>
+                                        }
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+
+            <div class="report-empty-state">
+
+                <div class="report-empty-icon">
+
+                    @if (hasFilters)
+                    {
+                        <i class="bi bi-search"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-receipt"></i>
+                    }
+
+                </div>
+
+
+                @if (hasFilters)
+                {
+                    <h5>
+                        No matching transactions
+                    </h5>
+
+                    <p>
+                        No wallet transactions match the report
+                        filters you selected. Try changing the filters
+                        or clear them to view the complete history.
+                    </p>
+
+                    <a asp-controller="Admin"
+                       asp-action="Reports"
+                       class="report-clear-btn">
+
+                        <i class="bi bi-arrow-counterclockwise"></i>
+
+                        Clear Filters
+
+                    </a>
+                }
+                else
+                {
+                    <h5>
+                        No transactions yet
+                    </h5>
+
+                    <p>
+                        Wallet transactions will appear here
+                        after members begin submitting requests.
+                    </p>
+                }
+
+            </div>
+        }
+
+    </div>
+
+
+
+    <!-- =====================================================
+         FOOT MESSAGE
+         ===================================================== -->
+
+    <div class="report-foot-message">
+
+        <i class="bi bi-shield-check"></i>
+
+        <span>
+            Financial totals are based on approved wallet activity.
+        </span>
+
+    </div>
+
+</div>

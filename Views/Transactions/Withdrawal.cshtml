@@ -1,0 +1,889 @@
+@model ValavBoysWallet.ViewModels.WithdrawalRequestViewModel
+
+@{
+    ViewData["Title"] = "Expense Request";
+}
+
+<style>
+
+    /* =========================================================
+           EXPENSE REQUEST
+           ========================================================= */
+
+    .expense-page {
+        width: 100%;
+        max-width: 1120px;
+        margin: 0 auto;
+    }
+
+
+    /* =========================================================
+           PAGE HEADER
+           ========================================================= */
+
+    .expense-page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .expense-title-wrap {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .expense-title-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 14px;
+        color: #d84a60;
+        background: #ffe7eb;
+        font-size: 21px;
+    }
+
+    .expense-page-header h1 {
+        margin: 0;
+        color: #20243f;
+        font-size: 27px;
+        font-weight: 750;
+        letter-spacing: -.7px;
+    }
+
+    .expense-page-header p {
+        margin: 6px 0 0;
+        color: #8c92a8;
+        font-size: 13px;
+    }
+
+    .expense-back-btn {
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 9px 15px;
+        border: 1px solid #e0e3ed;
+        border-radius: 11px;
+        color: #656c88;
+        background: #fff;
+        font-size: 12px;
+        font-weight: 650;
+        text-decoration: none;
+        transition: all .2s ease;
+    }
+
+        .expense-back-btn:hover {
+            color: #6757e8;
+            border-color: #d3cdf8;
+            background: #fbfaff;
+            transform: translateY(-1px);
+        }
+
+
+    /* =========================================================
+           MAIN LAYOUT
+           ========================================================= */
+
+    .expense-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 310px;
+        gap: 20px;
+        align-items: start;
+    }
+
+
+    /* =========================================================
+           FORM CARD
+           ========================================================= */
+
+    .expense-form-card {
+        overflow: hidden;
+        border: 1px solid #e8eaf2;
+        border-radius: 19px;
+        background: #fff;
+        box-shadow: 0 10px 32px rgba(37, 44, 80, .055);
+    }
+
+    .expense-form-header {
+        padding: 21px 22px;
+        border-bottom: 1px solid #edf0f5;
+    }
+
+        .expense-form-header h5 {
+            margin: 0 0 4px;
+            color: #30354f;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .expense-form-header p {
+            margin: 0;
+            color: #969baf;
+            font-size: 10px;
+        }
+
+    .expense-form-body {
+        padding: 22px;
+    }
+
+
+    /* =========================================================
+           APPROVAL NOTICE
+           ========================================================= */
+
+    .expense-info {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        margin-bottom: 21px;
+        padding: 13px 14px;
+        border: 1px solid #f1d7ad;
+        border-radius: 12px;
+        background: #fff9ee;
+    }
+
+    .expense-info-icon {
+        width: 31px;
+        height: 31px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 9px;
+        color: #b27a24;
+        background: #ffedcf;
+        font-size: 13px;
+    }
+
+    .expense-info strong {
+        display: block;
+        margin-bottom: 2px;
+        color: #8e672a;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .expense-info span {
+        color: #8f8068;
+        font-size: 9px;
+        line-height: 1.55;
+    }
+
+
+    /* =========================================================
+           FORM FIELDS
+           ========================================================= */
+
+    .expense-field {
+        margin-bottom: 18px;
+    }
+
+    .expense-label {
+        display: block;
+        margin-bottom: 7px;
+        color: #5f657e;
+        font-size: 10px;
+        font-weight: 650;
+    }
+
+    .expense-form-card .form-control,
+    .expense-form-card .form-select {
+        min-height: 43px;
+        padding: 10px 12px;
+        border: 1px solid #e0e3ec;
+        border-radius: 10px;
+        color: #454a63;
+        background-color: #fbfcfe;
+        font-size: 11px;
+        box-shadow: none;
+        transition: all .2s ease;
+    }
+
+    .expense-form-card textarea.form-control {
+        min-height: 115px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    .expense-form-card .form-control:focus,
+    .expense-form-card .form-select:focus {
+        border-color: #a89df1;
+        background-color: #fff;
+        box-shadow: 0 0 0 3px rgba(103, 87, 232, .09);
+    }
+
+    .expense-form-card .form-control::placeholder {
+        color: #b0b4c4;
+    }
+
+
+    /* =========================================================
+           MONEY INPUT
+           ========================================================= */
+
+    .expense-money-group {
+        display: flex;
+        align-items: stretch;
+    }
+
+    .expense-currency {
+        min-width: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #e0e3ec;
+        border-right: 0;
+        border-radius: 10px 0 0 10px;
+        color: #df4b60;
+        background: #fff2f4;
+        font-size: 13px;
+        font-weight: 750;
+    }
+
+    .expense-money-group .form-control {
+        border-radius: 0 10px 10px 0;
+    }
+
+
+    /* =========================================================
+           HELPER / VALIDATION
+           ========================================================= */
+
+    .expense-helper {
+        display: block;
+        margin-top: 6px;
+        color: #999eb2;
+        font-size: 9px;
+        line-height: 1.5;
+    }
+
+    .expense-validation {
+        display: block;
+        margin-top: 5px;
+        color: #df4b60;
+        font-size: 9px;
+    }
+
+    .expense-validation-summary.validation-summary-errors {
+        margin-bottom: 18px;
+        padding: 11px 13px;
+        border: 1px solid #f5c9d0;
+        border-radius: 10px;
+        color: #c43f54;
+        background: #fff3f5;
+        font-size: 9px;
+    }
+
+    .expense-validation-summary ul {
+        margin: 0;
+        padding-left: 18px;
+    }
+
+
+    /* =========================================================
+           CATEGORY
+           ========================================================= */
+
+    .expense-category-note {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 7px;
+        color: #999eb2;
+        font-size: 9px;
+    }
+
+        .expense-category-note i {
+            color: #6757e8;
+        }
+
+
+    /* =========================================================
+           SUBMIT
+           ========================================================= */
+
+    .expense-submit-btn {
+        width: 100%;
+        min-height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 22px;
+        border: 0;
+        border-radius: 11px;
+        color: #fff;
+        background: linear-gradient(135deg, #eb5b70, #d94159);
+        font-size: 11px;
+        font-weight: 700;
+        box-shadow: 0 8px 18px rgba(217, 65, 89, .17);
+        transition: all .2s ease;
+    }
+
+        .expense-submit-btn:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 11px 22px rgba(217, 65, 89, .23);
+        }
+
+
+    /* =========================================================
+           SIDE CARD
+           ========================================================= */
+
+    .expense-side-card {
+        padding: 20px;
+        border: 1px solid #e8eaf2;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 8px 28px rgba(37, 44, 80, .05);
+    }
+
+    .expense-side-icon {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 14px;
+        border-radius: 13px;
+        color: #d84a60;
+        background: #ffe7eb;
+        font-size: 18px;
+    }
+
+    .expense-side-card h5 {
+        margin: 0 0 6px;
+        color: #30354f;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .expense-side-card > p {
+        margin: 0 0 18px;
+        color: #969baf;
+        font-size: 9px;
+        line-height: 1.6;
+    }
+
+
+    /* =========================================================
+           STEPS
+           ========================================================= */
+
+    .expense-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+        .expense-step:last-child {
+            margin-bottom: 0;
+        }
+
+    .expense-step-number {
+        width: 27px;
+        height: 27px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 9px;
+        color: #d84a60;
+        background: #ffe9ed;
+        font-size: 9px;
+        font-weight: 750;
+    }
+
+    .expense-step strong {
+        display: block;
+        margin-bottom: 2px;
+        color: #50566e;
+        font-size: 9px;
+        font-weight: 650;
+    }
+
+    .expense-step span {
+        color: #9ca1b4;
+        font-size: 8px;
+        line-height: 1.5;
+    }
+
+
+    /* =========================================================
+           WALLET NOTE
+           ========================================================= */
+
+    .expense-wallet-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        margin-top: 14px;
+        padding: 13px;
+        border-radius: 12px;
+        color: #777b91;
+        background: #f6f7fa;
+        font-size: 8px;
+        line-height: 1.55;
+    }
+
+        .expense-wallet-note i {
+            margin-top: 1px;
+            color: #6757e8;
+            font-size: 12px;
+        }
+
+
+    /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+    @@media (max-width: 991.98px) {
+
+        .expense-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .expense-side-card {
+            order: initial;
+        }
+    }
+
+    @@media (max-width: 767.98px) {
+
+        .expense-page-header {
+            flex-direction: column;
+        }
+
+            .expense-page-header h1 {
+                font-size: 23px;
+            }
+
+        .expense-back-btn {
+            width: 100%;
+        }
+
+        .expense-form-body,
+        .expense-form-header {
+            padding: 18px;
+        }
+    }
+
+</style>
+
+
+<div class="expense-page">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
+
+    <div class="expense-page-header">
+
+        <div class="expense-title-wrap">
+
+            <div class="expense-title-icon">
+                <i class="bi bi-arrow-up-right-circle"></i>
+            </div>
+
+            <div>
+
+                <h1>
+                    Add Expense
+                </h1>
+
+                <p>
+                    Request an expense from the shared wallet balance.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <a asp-controller="Wallet"
+           asp-action="Dashboard"
+           class="expense-back-btn">
+
+            <i class="bi bi-arrow-left"></i>
+
+            Back to Dashboard
+
+        </a>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MAIN LAYOUT
+         ===================================================== -->
+
+    <div class="expense-layout">
+
+
+        <!-- =================================================
+             FORM
+             ================================================= -->
+
+        <div class="expense-form-card">
+
+
+            <div class="expense-form-header">
+
+                <h5>
+                    Expense Information
+                </h5>
+
+                <p>
+                    Tell us how much is needed and what the expense is for.
+                </p>
+
+            </div>
+
+
+            <div class="expense-form-body">
+
+
+                <!-- APPROVAL NOTICE -->
+
+                <div class="expense-info">
+
+                    <div class="expense-info-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Admin approval required
+                        </strong>
+
+                        <span>
+                            No money will be deducted from the wallet until
+                            an administrator approves this expense request.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- FORM -->
+
+                <form asp-action="Withdrawal"
+                      method="post">
+
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="expense-validation-summary">
+                    </div>
+
+
+
+                    <!-- =====================================
+                         AMOUNT
+                         ===================================== -->
+
+                    <div class="expense-field">
+
+                        <label asp-for="Amount"
+                               class="expense-label">
+                        </label>
+
+
+                        <div class="expense-money-group">
+
+                            <span class="expense-currency">
+                                ₹
+                            </span>
+
+                            <input asp-for="Amount"
+                                   class="form-control"
+                                   placeholder="Enter expense amount" />
+
+                        </div>
+
+
+                        <span asp-validation-for="Amount"
+                              class="expense-validation">
+                        </span>
+
+
+                        <span class="expense-helper">
+
+                            <i class="bi bi-wallet2 me-1"></i>
+
+                            Enter the amount you want to request from the wallet.
+
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         CATEGORY
+                         ===================================== -->
+
+                    <div class="expense-field">
+
+                        <label asp-for="Category"
+                               class="expense-label">
+                        </label>
+
+
+                        <select asp-for="Category"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Category --
+                            </option>
+
+                            <option value="Food">
+                                Food
+                            </option>
+
+                            <option value="Travel">
+                                Travel
+                            </option>
+
+                            <option value="Entertainment">
+                                Entertainment
+                            </option>
+
+                            <option value="Bills">
+                                Bills
+                            </option>
+
+                            <option value="Emergency">
+                                Emergency
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+
+                        <span asp-validation-for="Category"
+                              class="expense-validation">
+                        </span>
+
+
+                        <div class="expense-category-note">
+
+                            <i class="bi bi-tag"></i>
+
+                            Select the category that best describes this expense.
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         PURPOSE
+                         ===================================== -->
+
+                    <div class="expense-field">
+
+                        <label asp-for="Purpose"
+                               class="expense-label">
+                        </label>
+
+
+                        <textarea asp-for="Purpose"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Example: Dinner expense for group"></textarea>
+
+
+                        <span asp-validation-for="Purpose"
+                              class="expense-validation">
+                        </span>
+
+
+                        <span class="expense-helper">
+
+                            <i class="bi bi-chat-left-text me-1"></i>
+
+                            Briefly explain why this expense is needed.
+
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         SUBMIT
+                         ===================================== -->
+
+                    <button type="submit"
+                            class="expense-submit-btn">
+
+                        <i class="bi bi-send-check"></i>
+
+                        Submit Expense Request
+
+                    </button>
+
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             SIDE GUIDE
+             ================================================= -->
+
+        <div>
+
+
+            <div class="expense-side-card">
+
+                <div class="expense-side-icon">
+                    <i class="bi bi-receipt"></i>
+                </div>
+
+                <h5>
+                    How it works
+                </h5>
+
+                <p>
+                    Expenses affect the shared wallet only after approval.
+                </p>
+
+
+
+                <div class="expense-step">
+
+                    <div class="expense-step-number">
+                        1
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Enter the amount
+                        </strong>
+
+                        <span>
+                            Specify how much money is required for the expense.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="expense-step">
+
+                    <div class="expense-step-number">
+                        2
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Choose a category
+                        </strong>
+
+                        <span>
+                            Categorize the expense to keep wallet records organized.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="expense-step">
+
+                    <div class="expense-step-number">
+                        3
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Explain the purpose
+                        </strong>
+
+                        <span>
+                            Add a clear description so the admin can review it.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="expense-step">
+
+                    <div class="expense-step-number">
+                        4
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Admin approval
+                        </strong>
+
+                        <span>
+                            Once approved, the expense is deducted from the wallet.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="expense-wallet-note">
+
+                <i class="bi bi-shield-check"></i>
+
+                <span>
+                    Submitting this form creates a request only.
+                    The shared wallet balance remains unchanged until approval.
+                </span>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

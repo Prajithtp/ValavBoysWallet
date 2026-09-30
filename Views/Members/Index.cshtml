@@ -1,0 +1,950 @@
+@model IEnumerable<ValavBoysWallet.ViewModels.MemberContributionViewModel>
+
+@{
+    ViewData["Title"] = "Members";
+
+    var members = Model?.ToList()
+        ?? new List<ValavBoysWallet.ViewModels.MemberContributionViewModel>();
+
+    var totalMembers = members.Count;
+
+    var totalContributions =
+        members.Sum(x => x.TotalDeposited);
+
+    var totalExpenses =
+        members.Sum(x => x.TotalExpenses);
+
+    var totalBalance =
+        members.Sum(x => x.CurrentBalance);
+
+    var totalPending =
+        members.Sum(x => x.PendingRequests);
+}
+
+<style>
+
+    /* =========================================================
+           MEMBERS PAGE
+           ========================================================= */
+
+    .members-page {
+        width: 100%;
+    }
+
+
+    /* =========================================================
+           HEADER
+           ========================================================= */
+
+    .members-page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 26px;
+    }
+
+    .members-title-wrap {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .members-title-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 14px;
+        color: #6757e8;
+        background: #eeeaff;
+        font-size: 21px;
+    }
+
+    .members-page-header h1 {
+        margin: 0;
+        color: #20243f;
+        font-size: 27px;
+        font-weight: 750;
+        letter-spacing: -.7px;
+    }
+
+    .members-page-header p {
+        margin: 6px 0 0;
+        color: #8c92a8;
+        font-size: 13px;
+    }
+
+    .members-dashboard-btn {
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 9px 15px;
+        border: 1px solid #e0e3ed;
+        border-radius: 11px;
+        color: #656c88;
+        background: #fff;
+        font-size: 12px;
+        font-weight: 650;
+        transition: all .2s ease;
+    }
+
+        .members-dashboard-btn:hover {
+            color: #6757e8;
+            border-color: #d3cdf8;
+            background: #fbfaff;
+            transform: translateY(-1px);
+        }
+
+
+    /* =========================================================
+           SUMMARY CARDS
+           ========================================================= */
+
+    .member-summary-row {
+        margin-bottom: 20px;
+    }
+
+    .member-summary-card {
+        height: 100%;
+        padding: 20px 21px;
+        border: 1px solid #e9ebf3;
+        border-radius: 17px;
+        background: #fff;
+        box-shadow: 0 8px 28px rgba(37, 44, 80, .05);
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+        .member-summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 13px 32px rgba(37, 44, 80, .08);
+        }
+
+    .member-summary-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .member-summary-label {
+        margin: 0 0 7px;
+        color: #8d93aa;
+        font-size: 11px;
+    }
+
+    .member-summary-value {
+        margin: 0;
+        color: #252a47;
+        font-size: 22px;
+        font-weight: 750;
+        letter-spacing: -.4px;
+    }
+
+        .member-summary-value.green {
+            color: #159566;
+        }
+
+        .member-summary-value.red {
+            color: #df4b60;
+        }
+
+        .member-summary-value.purple {
+            color: #6252dd;
+        }
+
+    .member-summary-icon {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 13px;
+        font-size: 18px;
+    }
+
+    .summary-purple {
+        color: #6858df;
+        background: #eeeaff;
+    }
+
+    .summary-green {
+        color: #188d62;
+        background: #e3f8ef;
+    }
+
+    .summary-red {
+        color: #dc4b60;
+        background: #ffe7eb;
+    }
+
+    .summary-blue {
+        color: #3275d8;
+        background: #e8f1ff;
+    }
+
+
+    /* =========================================================
+           MEMBER PANEL
+           ========================================================= */
+
+    .members-panel {
+        overflow: hidden;
+        border: 1px solid #e8eaf2;
+        border-radius: 19px;
+        background: #fff;
+        box-shadow: 0 10px 32px rgba(37, 44, 80, .055);
+    }
+
+    .members-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 21px 23px;
+        border-bottom: 1px solid #edf0f5;
+    }
+
+        .members-panel-header h5 {
+            margin: 0 0 4px;
+            color: #252a47;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .members-panel-header p {
+            margin: 0;
+            color: #9297ad;
+            font-size: 11px;
+        }
+
+    .members-count-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 11px;
+        border-radius: 20px;
+        color: #6152d4;
+        background: #eeeaff;
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+
+    /* =========================================================
+           TABLE
+           ========================================================= */
+
+    .members-table {
+        width: 100%;
+        margin: 0;
+    }
+
+        .members-table thead th {
+            padding: 12px 20px;
+            color: #8d92a8;
+            background: #fafbfe;
+            border: 0;
+            border-bottom: 1px solid #edf0f5;
+            font-size: 10px;
+            font-weight: 650;
+            text-transform: uppercase;
+            letter-spacing: .35px;
+            white-space: nowrap;
+        }
+
+        .members-table tbody td {
+            padding: 16px 20px;
+            color: #555b74;
+            border-bottom: 1px solid #f0f1f5;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+        .members-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .members-table tbody tr {
+            transition: background .15s ease;
+        }
+
+            .members-table tbody tr:hover {
+                background: #fbfbfe;
+            }
+
+
+    /* =========================================================
+           MEMBER PROFILE CELL
+           ========================================================= */
+
+    .member-profile {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-width: 210px;
+    }
+
+    .member-avatar {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 13px;
+        color: #fff;
+        background: linear-gradient( 135deg, #7565ed, #5948d6 );
+        font-size: 13px;
+        font-weight: 750;
+        box-shadow: 0 5px 14px rgba(103, 87, 232, .18);
+    }
+
+    .member-name {
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #363b55;
+        font-weight: 650;
+    }
+
+    .member-email {
+        max-width: 190px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-top: 3px;
+        color: #969baf;
+        font-size: 10px;
+    }
+
+
+    /* =========================================================
+           MONEY VALUES
+           ========================================================= */
+
+    .member-money {
+        font-size: 12px;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+        .member-money.deposit {
+            color: #159566;
+        }
+
+        .member-money.expense {
+            color: #df4b60;
+        }
+
+        .member-money.balance-positive {
+            color: #333951;
+        }
+
+        .member-money.balance-negative {
+            color: #df4b60;
+        }
+
+
+    /* =========================================================
+           PENDING STATUS
+           ========================================================= */
+
+    .member-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 9px;
+        border-radius: 20px;
+        font-size: 9px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .member-status::before {
+            content: "";
+            width: 5px;
+            height: 5px;
+            flex-shrink: 0;
+            border-radius: 50%;
+        }
+
+        .member-status.pending {
+            color: #ae741e;
+            background: #fff2d9;
+        }
+
+            .member-status.pending::before {
+                background: #e4a038;
+            }
+
+        .member-status.clear {
+            color: #16875d;
+            background: #e3f7ed;
+        }
+
+            .member-status.clear::before {
+                background: #1ca56f;
+            }
+
+
+    /* =========================================================
+           EMPTY STATE
+           ========================================================= */
+
+    .members-empty {
+        padding: 65px 20px;
+        text-align: center;
+    }
+
+    .members-empty-icon {
+        width: 68px;
+        height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        border-radius: 20px;
+        color: #6858df;
+        background: #eeeaff;
+        font-size: 28px;
+    }
+
+    .members-empty h5 {
+        margin: 0 0 6px;
+        color: #333850;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .members-empty p {
+        margin: 0;
+        color: #969baf;
+        font-size: 11px;
+    }
+
+
+    /* =========================================================
+           FOOT MESSAGE
+           ========================================================= */
+
+    .members-foot-message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 21px;
+        color: #999eb2;
+        font-size: 10px;
+    }
+
+        .members-foot-message i {
+            color: #6757e8;
+        }
+
+
+    /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+    @@media (max-width: 991.98px) {
+
+        .members-table {
+            min-width: 820px;
+        }
+    }
+
+    @@media (max-width: 767.98px) {
+
+        .members-page-header {
+            flex-direction: column;
+        }
+
+            .members-page-header h1 {
+                font-size: 23px;
+            }
+
+        .members-dashboard-btn {
+            width: 100%;
+        }
+
+        .members-panel-header {
+            padding: 18px;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+
+        .members-page-header {
+            margin-bottom: 20px;
+        }
+
+        .members-title-icon {
+            width: 43px;
+            height: 43px;
+            font-size: 18px;
+        }
+
+        .members-page-header p {
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .member-summary-card {
+            padding: 17px;
+        }
+
+        .members-panel-header {
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .members-count-pill {
+            flex-shrink: 0;
+        }
+
+        .table-responsive {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .members-foot-message {
+            padding: 0 12px;
+            text-align: center;
+            line-height: 1.5;
+        }
+    }
+
+</style>
+
+
+<div class="members-page">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
+
+    <div class="members-page-header">
+
+        <div class="members-title-wrap">
+
+            <div class="members-title-icon">
+                <i class="bi bi-people"></i>
+            </div>
+
+            <div>
+
+                <h1>
+                    Members
+                </h1>
+
+                <p>
+                    See how every member contributes to the shared wallet.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <a asp-controller="Wallet"
+           asp-action="Dashboard"
+           class="members-dashboard-btn">
+
+            <i class="bi bi-grid"></i>
+
+            Wallet Dashboard
+
+        </a>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         GROUP SUMMARY
+         ===================================================== -->
+
+    <div class="row g-3 member-summary-row">
+
+
+        <!-- MEMBERS -->
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="member-summary-card">
+
+                <div class="member-summary-inner">
+
+                    <div>
+
+                        <p class="member-summary-label">
+                            Total Members
+                        </p>
+
+                        <h3 class="member-summary-value">
+                            @totalMembers
+                        </h3>
+
+                    </div>
+
+                    <div class="member-summary-icon summary-purple">
+
+                        <i class="bi bi-people"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- CONTRIBUTIONS -->
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="member-summary-card">
+
+                <div class="member-summary-inner">
+
+                    <div>
+
+                        <p class="member-summary-label">
+                            Group Contributions
+                        </p>
+
+                        <h3 class="member-summary-value green">
+                            ₹@totalContributions.ToString("N2")
+                        </h3>
+
+                    </div>
+
+                    <div class="member-summary-icon summary-green">
+
+                        <i class="bi bi-arrow-down-left"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- EXPENSES -->
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="member-summary-card">
+
+                <div class="member-summary-inner">
+
+                    <div>
+
+                        <p class="member-summary-label">
+                            Group Expenses
+                        </p>
+
+                        <h3 class="member-summary-value red">
+                            ₹@totalExpenses.ToString("N2")
+                        </h3>
+
+                    </div>
+
+                    <div class="member-summary-icon summary-red">
+
+                        <i class="bi bi-arrow-up-right"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- CURRENT BALANCE -->
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="member-summary-card">
+
+                <div class="member-summary-inner">
+
+                    <div>
+
+                        <p class="member-summary-label">
+                            Combined Balance
+                        </p>
+
+                        <h3 class="member-summary-value purple">
+                            ₹@totalBalance.ToString("N2")
+                        </h3>
+
+                    </div>
+
+                    <div class="member-summary-icon summary-blue">
+
+                        <i class="bi bi-wallet2"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MEMBERS TABLE
+         ===================================================== -->
+
+    <div class="members-panel">
+
+
+        <!-- PANEL HEADER -->
+
+        <div class="members-panel-header">
+
+            <div>
+
+                <h5>
+                    Contribution Overview
+                </h5>
+
+                <p>
+                    Approved wallet activity and pending requests by member.
+                </p>
+
+            </div>
+
+
+            <span class="members-count-pill">
+
+                <i class="bi bi-person-check"></i>
+
+                @totalMembers Members
+
+            </span>
+
+        </div>
+
+
+
+        @if (members.Any())
+        {
+            <div class="table-responsive">
+
+                <table class="members-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Member
+                            </th>
+
+                            <th>
+                                Deposited
+                            </th>
+
+                            <th>
+                                Expenses
+                            </th>
+
+                            <th>
+                                Current Balance
+                            </th>
+
+                            <th>
+                                Pending
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var member in members)
+                        {
+                            var memberInitial =
+                            !string.IsNullOrWhiteSpace(member.FullName)
+                            ? member.FullName.Substring(0, 1).ToUpper()
+                            : "M";
+
+                            var isNegativeBalance =
+                            member.CurrentBalance < 0;
+
+                            <tr>
+
+
+                                <!-- MEMBER -->
+
+                                <td>
+
+                                    <div class="member-profile">
+
+                                        <div class="member-avatar">
+                                            @memberInitial
+                                        </div>
+
+                                        <div>
+
+                                            <div class="member-name">
+                                                @member.FullName
+                                            </div>
+
+                                            <div class="member-email">
+                                                @member.Email
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+
+                                <!-- DEPOSITED -->
+
+                                <td>
+
+                                    <span class="member-money deposit">
+
+                                        + ₹@member.TotalDeposited.ToString("N2")
+
+                                    </span>
+
+                                </td>
+
+
+
+                                <!-- EXPENSES -->
+
+                                <td>
+
+                                    <span class="member-money expense">
+
+                                        - ₹@member.TotalExpenses.ToString("N2")
+
+                                    </span>
+
+                                </td>
+
+
+
+                                <!-- BALANCE -->
+
+                                <td>
+
+                                    <span class="member-money
+                                                @(isNegativeBalance
+                                                                                      ? "balance-negative"
+                                                                                      : "balance-positive")">
+
+                                ₹@member.CurrentBalance.ToString("N2")
+
+                                    </span>
+
+                                </td>
+
+
+
+                                <!-- PENDING -->
+
+                                <td>
+
+                            @if (member.PendingRequests > 0)
+                                    {
+                                        <span class="member-status pending">
+
+                                            @member.PendingRequests Pending
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="member-status clear">
+
+                                            Clear
+
+                                        </span>
+                                    }
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+
+            <!-- EMPTY STATE -->
+
+            <div class="members-empty">
+
+                <div class="members-empty-icon">
+
+                    <i class="bi bi-people"></i>
+
+                </div>
+
+                <h5>
+                    No members found
+                </h5>
+
+                <p>
+                    Registered wallet members will appear here.
+                </p>
+
+            </div>
+        }
+
+    </div>
+
+
+
+    <!-- =====================================================
+         FOOT MESSAGE
+         ===================================================== -->
+
+    <div class="members-foot-message">
+
+        <i class="bi bi-shield-check"></i>
+
+        <span>
+            Contribution totals include approved wallet activity only.
+        </span>
+
+    </div>
+
+
+</div>

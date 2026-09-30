@@ -1,0 +1,927 @@
+@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<style>
+
+    /* =========================================================
+           LOGIN PAGE
+           ========================================================= */
+
+    .auth-page {
+        min-height: calc(100vh - 150px);
+        display: flex;
+        align-items: center;
+        padding: 42px 0;
+    }
+
+    .auth-shell {
+        width: 100%;
+        max-width: 1180px;
+        margin: 0 auto;
+    }
+
+    .auth-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(400px, .85fr);
+        gap: 32px;
+        align-items: stretch;
+    }
+
+
+    /* =========================================================
+           PHOTO PANEL
+           ========================================================= */
+
+    .auth-intro {
+        position: relative;
+        min-height: 620px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 42px;
+        border-radius: 26px;
+        color: #fff;
+        background-image: linear-gradient( 180deg, rgba(18, 19, 35, .02) 0%, rgba(18, 19, 35, .06) 25%, rgba(18, 19, 35, .30) 52%, rgba(18, 19, 35, .76) 76%, rgba(18, 19, 35, .96) 100% ), linear-gradient( 90deg, rgba(18, 19, 35, .24) 0%, rgba(18, 19, 35, .05) 60%, transparent 100% ), url("/images/valav-friends.png");
+        background-size: cover;
+        background-position: 52% center;
+        background-repeat: no-repeat;
+        box-shadow: 0 28px 60px rgba(23, 24, 46, .18);
+    }
+
+
+        /* subtle edge polish */
+
+        .auth-intro::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            border-radius: inherit;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08);
+        }
+
+
+    /* =========================================================
+           CONTENT OVER PHOTO
+           ========================================================= */
+
+    .auth-intro-content {
+        position: relative;
+        z-index: 2;
+        max-width: 510px;
+    }
+
+    .auth-brand-mark {
+        width: 54px;
+        height: 54px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        border-radius: 16px;
+        color: #fff;
+        background: linear-gradient( 135deg, #7969f6, #5946dd );
+        box-shadow: 0 12px 28px rgba(75, 57, 214, .38);
+        font-size: 24px;
+    }
+
+    .auth-intro h1 {
+        max-width: 470px;
+        margin: 0 0 16px;
+        color: #fff;
+        font-size: 40px;
+        font-weight: 780;
+        line-height: 1.12;
+        letter-spacing: -1.25px;
+        text-shadow: 0 2px 20px rgba(0, 0, 0, .18);
+    }
+
+    .auth-intro-description {
+        max-width: 490px;
+        margin: 0;
+        color: rgba(255, 255, 255, .82);
+        font-size: 13px;
+        line-height: 1.75;
+    }
+
+
+    /* =========================================================
+           FEATURES
+           ========================================================= */
+
+    .auth-feature-list {
+        display: grid;
+        gap: 11px;
+        margin-top: 26px;
+    }
+
+    .auth-feature {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        color: rgba(255, 255, 255, .92);
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .auth-feature-icon {
+        width: 33px;
+        height: 33px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 9px;
+        color: #c7c0ff;
+        background: rgba(103, 87, 232, .28);
+        border: 1px solid rgba(255, 255, 255, .08);
+        backdrop-filter: blur(8px);
+    }
+
+
+    /* =========================================================
+           QUOTE
+           ========================================================= */
+
+    .auth-quote {
+        position: relative;
+        z-index: 2;
+        margin-top: 25px;
+        color: rgba(255, 255, 255, .58);
+        font-size: 10px;
+    }
+
+        .auth-quote strong {
+            color: #fff;
+            font-weight: 700;
+        }
+
+
+    /* =========================================================
+           LOGIN CARD
+           ========================================================= */
+
+    .auth-card {
+        height: 100%;
+        min-height: 620px;
+        display: flex;
+        flex-direction: column;
+        padding: 42px 38px;
+        border: 1px solid #e8eaf2;
+        border-radius: 26px;
+        background: #fff;
+        box-shadow: 0 18px 50px rgba(34, 40, 80, .075);
+    }
+
+
+    /* =========================================================
+           CARD HEADER
+           ========================================================= */
+
+    .auth-card-header {
+        margin-bottom: 30px;
+    }
+
+        .auth-card-header h2 {
+            margin: 0 0 9px;
+            color: #22273e;
+            font-size: 28px;
+            font-weight: 760;
+            letter-spacing: -.75px;
+        }
+
+        .auth-card-header p {
+            margin: 0;
+            color: #949aaf;
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+
+    /* =========================================================
+           VALIDATION
+           ========================================================= */
+
+    .auth-validation.validation-summary-errors {
+        margin-bottom: 18px;
+        padding: 12px 14px;
+        border: 1px solid #f4cbd1;
+        border-radius: 11px;
+        color: #c73d52;
+        background: #fff3f5;
+        font-size: 10px;
+    }
+
+    .auth-validation ul {
+        margin: 0;
+        padding-left: 17px;
+    }
+
+
+    /* =========================================================
+           FIELDS
+           ========================================================= */
+
+    .auth-field {
+        margin-bottom: 18px;
+    }
+
+    .auth-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #4d546d;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .auth-input-wrap {
+        position: relative;
+    }
+
+    .auth-input-icon {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        z-index: 2;
+        transform: translateY(-50%);
+        color: #939aae;
+        font-size: 15px;
+        pointer-events: none;
+    }
+
+    .auth-card .form-control {
+        min-height: 54px;
+        padding: 11px 15px 11px 45px;
+        border: 1px solid #dfe3ed;
+        border-radius: 12px;
+        background: #fbfcfe;
+        color: #3e455e;
+        font-size: 12px;
+        box-shadow: none;
+        transition: border-color .18s ease, background-color .18s ease, box-shadow .18s ease;
+    }
+
+        .auth-card .form-control:hover {
+            border-color: #d3d7e5;
+        }
+
+        .auth-card .form-control:focus {
+            border-color: #9c91ee;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(103, 87, 232, .085);
+        }
+
+        .auth-card .form-control::placeholder {
+            color: #afb4c6;
+        }
+
+    .auth-error {
+        display: block;
+        margin-top: 5px;
+        color: #df4b60;
+        font-size: 9px;
+    }
+
+
+    /* =========================================================
+           OPTIONS
+           ========================================================= */
+
+    .auth-options {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-top: 2px;
+    }
+
+    .auth-remember {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin: 0;
+        color: #747a90;
+        font-size: 10px;
+        cursor: pointer;
+    }
+
+        .auth-remember .form-check-input {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            border-color: #cbd0de;
+            cursor: pointer;
+        }
+
+            .auth-remember .form-check-input:checked {
+                background-color: #6757e8;
+                border-color: #6757e8;
+            }
+
+    .auth-forgot {
+        color: #6757e8;
+        font-size: 10px;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+        .auth-forgot:hover {
+            color: #5042d6;
+        }
+
+
+    /* =========================================================
+           LOGIN BUTTON
+           ========================================================= */
+
+    .auth-submit {
+        width: 100%;
+        min-height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 24px;
+        border: 0;
+        border-radius: 12px;
+        color: #fff;
+        background: linear-gradient( 135deg, #7364ef, #5845db );
+        font-size: 11px;
+        font-weight: 700;
+        box-shadow: 0 10px 24px rgba(103, 87, 232, .23);
+        transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+        .auth-submit:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 14px 30px rgba(103, 87, 232, .3);
+        }
+
+
+    /* =========================================================
+           REGISTER / RESEND
+           ========================================================= */
+
+    .auth-bottom {
+        margin-top: 25px;
+        padding-top: 22px;
+        text-align: center;
+        border-top: 1px solid #eef0f5;
+        color: #9298ab;
+        font-size: 10px;
+    }
+
+        .auth-bottom a {
+            margin-left: 3px;
+            color: #6757e8;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+            .auth-bottom a:hover {
+                color: #5042d6;
+            }
+
+    .auth-secondary-link {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+        .auth-secondary-link a {
+            color: #9096aa;
+            font-size: 9px;
+            text-decoration: none;
+        }
+
+            .auth-secondary-link a:hover {
+                color: #6757e8;
+            }
+
+
+    /* =========================================================
+           EXTERNAL LOGIN
+           ========================================================= */
+
+    .external-login {
+        margin-top: 22px;
+        padding-top: 20px;
+        border-top: 1px solid #eef0f5;
+    }
+
+    .external-login-label {
+        margin-bottom: 12px;
+        color: #9aa0b3;
+        font-size: 9px;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: .7px;
+    }
+
+    .external-login-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+        .external-login-buttons .btn {
+            flex: 1;
+            min-width: 120px;
+        }
+
+
+    /* =========================================================
+           TABLET
+           ========================================================= */
+
+    @@media (max-width: 991.98px) {
+
+        .auth-shell {
+            max-width: 620px;
+        }
+
+        .auth-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .auth-intro {
+            min-height: 540px;
+        }
+
+        .auth-card {
+            min-height: auto;
+        }
+    }
+
+
+    /* =========================================================
+           MOBILE
+           ========================================================= */
+
+    @@media (max-width: 575.98px) {
+
+        .auth-page {
+            padding: 22px 0 30px;
+        }
+
+        .auth-layout {
+            gap: 18px;
+        }
+
+        .auth-intro {
+            min-height: 470px;
+            padding: 25px 20px;
+            border-radius: 20px;
+            background-position: center center;
+        }
+
+        .auth-brand-mark {
+            width: 46px;
+            height: 46px;
+            margin-bottom: 16px;
+            border-radius: 13px;
+            font-size: 20px;
+        }
+
+        .auth-intro h1 {
+            font-size: 29px;
+            letter-spacing: -.8px;
+        }
+
+        .auth-intro-description {
+            font-size: 11px;
+        }
+
+        .auth-feature-list {
+            margin-top: 21px;
+        }
+
+        .auth-feature {
+            font-size: 10px;
+        }
+
+        .auth-feature-icon {
+            width: 30px;
+            height: 30px;
+        }
+
+        .auth-card {
+            padding: 26px 20px;
+            border-radius: 20px;
+        }
+
+        .auth-card-header {
+            margin-bottom: 24px;
+        }
+
+            .auth-card-header h2 {
+                font-size: 24px;
+            }
+
+        .auth-card .form-control {
+            font-size: 16px;
+        }
+    }
+
+
+    /* =========================================================
+           VERY SMALL MOBILE
+           ========================================================= */
+
+    @@media (max-width: 390px) {
+
+        .auth-intro {
+            min-height: 440px;
+        }
+
+            .auth-intro h1 {
+                font-size: 26px;
+            }
+
+        .auth-options {
+            gap: 8px;
+        }
+
+        .auth-forgot,
+        .auth-remember {
+            font-size: 9px;
+        }
+    }
+
+</style>
+
+
+<div class="container">
+
+    <div class="auth-page">
+
+        <div class="auth-shell">
+
+            <div class="auth-layout">
+
+
+                <!-- ================================================
+                     FRIENDS PHOTO PANEL
+                     ================================================ -->
+
+                <section class="auth-intro">
+
+                    <div class="auth-intro-content">
+
+
+                        <div class="auth-brand-mark">
+
+                            <i class="bi bi-wallet2"></i>
+
+                        </div>
+
+
+                        <h1>
+
+                            Welcome back.<br />
+
+                            The wallet survived<br />
+
+                            without you.
+
+                        </h1>
+
+
+                        <p class="auth-intro-description">
+
+                            Sign in to check the group balance,
+                            review your transactions and keep track
+                            of where the money went.
+
+                        </p>
+
+
+
+                        <div class="auth-feature-list">
+
+
+                            <div class="auth-feature">
+
+                                <span class="auth-feature-icon">
+
+                                    <i class="bi bi-wallet2"></i>
+
+                                </span>
+
+                                <span>
+
+                                    View your personal and group balance
+
+                                </span>
+
+                            </div>
+
+
+
+                            <div class="auth-feature">
+
+                                <span class="auth-feature-icon">
+
+                                    <i class="bi bi-clock-history"></i>
+
+                                </span>
+
+                                <span>
+
+                                    Review your transaction history
+
+                                </span>
+
+                            </div>
+
+
+
+                            <div class="auth-feature">
+
+                                <span class="auth-feature-icon">
+
+                                    <i class="bi bi-people"></i>
+
+                                </span>
+
+                                <span>
+
+                                    Stay updated with the whole group
+
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="auth-quote">
+
+                        Same people. Different bills.
+
+                        <strong>
+
+                            Stay together 💜
+
+                        </strong>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ================================================
+                     LOGIN CARD
+                     ================================================ -->
+
+                <section class="auth-card">
+
+
+                    <div class="auth-card-header">
+
+                        <h2>
+
+                            Welcome back
+
+                        </h2>
+
+                        <p>
+
+                            Enter your account details to continue
+                            to Valav Boys Wallet.
+
+                        </p>
+
+                    </div>
+
+
+
+                    <form id="account"
+                          method="post">
+
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="auth-validation"
+                             role="alert">
+                        </div>
+
+
+
+                        <!-- EMAIL -->
+
+                        <div class="auth-field">
+
+                            <label asp-for="Input.Email"
+                                   class="auth-label">
+
+                                Email Address
+
+                            </label>
+
+
+                            <div class="auth-input-wrap">
+
+                                <i class="bi bi-envelope auth-input-icon"></i>
+
+                                <input asp-for="Input.Email"
+                                       class="form-control"
+                                       autocomplete="username"
+                                       aria-required="true"
+                                       placeholder="name@example.com" />
+
+                            </div>
+
+
+                            <span asp-validation-for="Input.Email"
+                                  class="auth-error">
+                            </span>
+
+                        </div>
+
+
+
+                        <!-- PASSWORD -->
+
+                        <div class="auth-field">
+
+                            <label asp-for="Input.Password"
+                                   class="auth-label">
+
+                                Password
+
+                            </label>
+
+
+                            <div class="auth-input-wrap">
+
+                                <i class="bi bi-lock auth-input-icon"></i>
+
+                                <input asp-for="Input.Password"
+                                       class="form-control"
+                                       autocomplete="current-password"
+                                       aria-required="true"
+                                       placeholder="Enter your password" />
+
+                            </div>
+
+
+                            <span asp-validation-for="Input.Password"
+                                  class="auth-error">
+                            </span>
+
+                        </div>
+
+
+
+                        <!-- OPTIONS -->
+
+                        <div class="auth-options">
+
+
+                            <label asp-for="Input.RememberMe"
+                                   class="auth-remember">
+
+                                <input class="form-check-input"
+                                       asp-for="Input.RememberMe" />
+
+                                <span>
+
+                                    Remember me
+
+                                </span>
+
+                            </label>
+
+
+
+                            <a id="forgot-password"
+                               asp-page="./ForgotPassword"
+                               class="auth-forgot">
+
+                                Forgot password?
+
+                            </a>
+
+
+                        </div>
+
+
+
+                        <!-- LOGIN -->
+
+                        <button id="login-submit"
+                                type="submit"
+                                class="auth-submit">
+
+                            <i class="bi bi-box-arrow-in-right"></i>
+
+                            Log in
+
+                        </button>
+
+
+                    </form>
+
+
+
+                    <!-- CREATE ACCOUNT -->
+
+                    <div class="auth-bottom">
+
+                        Don't have an account?
+
+                        <a asp-page="./Register"
+                           asp-route-returnUrl="@Model.ReturnUrl">
+
+                            Create Account
+
+                        </a>
+
+                    </div>
+
+
+
+                    <!-- EMAIL CONFIRMATION -->
+
+                    <div class="auth-secondary-link">
+
+                        <a id="resend-confirmation"
+                           asp-page="./ResendEmailConfirmation">
+
+                            Didn't receive your confirmation email?
+                            Resend it
+
+                        </a>
+
+                    </div>
+
+
+
+                    <!-- EXTERNAL LOGIN -->
+                    @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+                    {
+                        <div class="external-login">
+
+                            <div class="external-login-label">
+
+                                Or continue with
+
+                            </div>
+
+
+                            <form id="external-account"
+                                  asp-page="./ExternalLogin"
+                                  asp-route-returnUrl="@Model.ReturnUrl"
+                                  method="post">
+
+                                <div class="external-login-buttons">
+
+                                    @foreach (var provider in Model.ExternalLogins!)
+                                    {
+                                        <button type="submit"
+                                                class="btn btn-outline-secondary"
+                                                name="provider"
+                                                value="@provider.Name"
+                                                title="Log in using your @provider.DisplayName account">
+
+                                            @provider.DisplayName
+
+                                        </button>
+                                    }
+
+                                </div>
+
+                            </form>
+
+                        </div>
+                    }
+
+
+                </section>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

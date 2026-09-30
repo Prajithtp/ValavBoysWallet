@@ -1,0 +1,1311 @@
+@model ValavBoysWallet.ViewModels.AdminMemberDetailsViewModel
+
+@{
+    ViewData["Title"] = "Member Details";
+
+    var memberInitial =
+        !string.IsNullOrWhiteSpace(Model.FullName)
+            ? Model.FullName.Substring(0, 1).ToUpper()
+            : "M";
+
+    var isNegativeBalance = Model.CurrentBalance < 0;
+}
+
+<style>
+
+    /* =========================================================
+           MEMBER DETAILS PAGE
+           ========================================================= */
+
+    .member-details-page {
+        width: 100%;
+    }
+
+
+    /* =========================================================
+           PAGE HEADER
+           ========================================================= */
+
+    .member-details-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 22px;
+        margin-bottom: 24px;
+    }
+
+    .member-details-title-wrap {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        min-width: 0;
+    }
+
+    .member-details-title-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 14px;
+        color: #6757e8;
+        background: #eeeaff;
+        font-size: 21px;
+    }
+
+    .member-details-header h1 {
+        margin: 0;
+        color: #20243f;
+        font-size: 27px;
+        font-weight: 750;
+        letter-spacing: -.7px;
+    }
+
+    .member-details-header p {
+        margin: 6px 0 0;
+        color: #8c92a8;
+        font-size: 13px;
+    }
+
+    .back-users-btn {
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        flex-shrink: 0;
+        padding: 9px 15px;
+        border: 1px solid #e0e3ed;
+        border-radius: 11px;
+        color: #656c88;
+        background: #fff;
+        font-size: 12px;
+        font-weight: 650;
+        transition: all .2s ease;
+    }
+
+        .back-users-btn:hover {
+            color: #6757e8;
+            border-color: #d3cdf8;
+            background: #fbfaff;
+            transform: translateY(-1px);
+        }
+
+
+    /* =========================================================
+           MEMBER PROFILE
+           ========================================================= */
+
+    .member-profile-card {
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 20px;
+        padding: 24px;
+        border: 1px solid #e8eaf2;
+        border-radius: 19px;
+        background: #fff;
+        box-shadow: 0 10px 32px rgba(37, 44, 80, .055);
+    }
+
+        .member-profile-card::after {
+            content: "";
+            position: absolute;
+            top: -90px;
+            right: -70px;
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            background: rgba(103, 87, 232, .045);
+            pointer-events: none;
+        }
+
+    .member-profile-content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+    }
+
+    .member-profile-main {
+        display: flex;
+        align-items: center;
+        gap: 17px;
+        min-width: 0;
+    }
+
+    .member-profile-avatar {
+        width: 62px;
+        height: 62px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 18px;
+        color: #fff;
+        background: linear-gradient(135deg, #7565ed, #5948d6);
+        box-shadow: 0 9px 22px rgba(103, 87, 232, .22);
+        font-size: 21px;
+        font-weight: 750;
+    }
+
+    .member-profile-info {
+        min-width: 0;
+    }
+
+    .member-profile-name {
+        margin: 0 0 8px;
+        overflow-wrap: anywhere;
+        color: #30354f;
+        font-size: 19px;
+        font-weight: 720;
+    }
+
+    .member-contact-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 18px;
+    }
+
+    .member-contact-item {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        min-width: 0;
+        color: #858ba3;
+        font-size: 11px;
+    }
+
+        .member-contact-item i {
+            color: #6757e8;
+            font-size: 12px;
+        }
+
+        .member-contact-item span {
+            overflow-wrap: anywhere;
+        }
+
+    .member-profile-status {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 7px;
+        flex-shrink: 0;
+    }
+
+    .member-status-label {
+        color: #999eb2;
+        font-size: 9px;
+        font-weight: 650;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+
+    .member-status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 11px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+        .member-status-pill::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .member-status-pill.active {
+            color: #16875d;
+            background: #e3f7ed;
+        }
+
+            .member-status-pill.active::before {
+                background: #1ca56f;
+            }
+
+        .member-status-pill.disabled {
+            color: #cf4258;
+            background: #ffe6ea;
+        }
+
+            .member-status-pill.disabled::before {
+                background: #e14c61;
+            }
+
+
+    /* =========================================================
+           SUMMARY CARDS
+           ========================================================= */
+
+    .member-summary-row {
+        margin-bottom: 20px;
+    }
+
+    .member-summary-card {
+        height: 100%;
+        min-height: 128px;
+        padding: 19px;
+        border: 1px solid #e9ebf3;
+        border-radius: 17px;
+        background: #fff;
+        box-shadow: 0 8px 27px rgba(37, 44, 80, .045);
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+        .member-summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 31px rgba(37, 44, 80, .075);
+        }
+
+    .member-summary-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+
+    .member-summary-label {
+        margin: 0;
+        color: #8d93aa;
+        font-size: 10px;
+    }
+
+    .member-summary-icon {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 10px;
+        font-size: 15px;
+    }
+
+    .summary-purple {
+        color: #6757e8;
+        background: #eeeaff;
+    }
+
+    .summary-green {
+        color: #188d62;
+        background: #e3f8ef;
+    }
+
+    .summary-red {
+        color: #dc4b60;
+        background: #ffe7eb;
+    }
+
+    .summary-orange {
+        color: #b77a1e;
+        background: #fff2d9;
+    }
+
+    .summary-blue {
+        color: #3674d8;
+        background: #e8f1ff;
+    }
+
+    .member-summary-value {
+        margin: 0;
+        color: #333850;
+        font-size: 19px;
+        font-weight: 750;
+        letter-spacing: -.3px;
+        overflow-wrap: anywhere;
+    }
+
+        .member-summary-value.green {
+            color: #159566;
+        }
+
+        .member-summary-value.red {
+            color: #df4b60;
+        }
+
+        .member-summary-value.negative {
+            color: #df4b60;
+        }
+
+
+    /* =========================================================
+           TRANSACTION PANEL
+           ========================================================= */
+
+    .member-transactions-panel {
+        overflow: hidden;
+        border: 1px solid #e8eaf2;
+        border-radius: 19px;
+        background: #fff;
+        box-shadow: 0 10px 32px rgba(37, 44, 80, .055);
+    }
+
+    .member-transactions-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 21px 23px;
+        border-bottom: 1px solid #edf0f5;
+    }
+
+        .member-transactions-header h5 {
+            margin: 0 0 4px;
+            color: #252a47;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .member-transactions-header p {
+            margin: 0;
+            color: #9297ad;
+            font-size: 11px;
+        }
+
+    .transaction-count-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+        padding: 7px 10px;
+        border-radius: 20px;
+        color: #6152d4;
+        background: #eeeaff;
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+
+    /* =========================================================
+           TABLE
+           ========================================================= */
+
+    .member-transactions-table {
+        width: 100%;
+        margin: 0;
+    }
+
+        .member-transactions-table thead th {
+            padding: 12px 16px;
+            color: #8d92a8;
+            background: #fafbfe;
+            border: 0;
+            border-bottom: 1px solid #edf0f5;
+            font-size: 9px;
+            font-weight: 650;
+            text-transform: uppercase;
+            letter-spacing: .35px;
+            white-space: nowrap;
+        }
+
+        .member-transactions-table tbody td {
+            padding: 15px 16px;
+            color: #555b74;
+            border-bottom: 1px solid #f0f1f5;
+            font-size: 11px;
+            vertical-align: middle;
+        }
+
+        .member-transactions-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .member-transactions-table tbody tr {
+            transition: background .15s ease;
+        }
+
+            .member-transactions-table tbody tr:hover {
+                background: #fbfbfe;
+            }
+
+
+    /* =========================================================
+           TRANSACTION TYPE
+           ========================================================= */
+
+    .transaction-type-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 9px;
+        border-radius: 20px;
+        font-size: 9px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .transaction-type-pill.deposit {
+            color: #16875d;
+            background: #e3f7ed;
+        }
+
+        .transaction-type-pill.expense {
+            color: #cf4258;
+            background: #ffe6ea;
+        }
+
+
+    /* =========================================================
+           DETAILS
+           ========================================================= */
+
+    .transaction-detail-main {
+        max-width: 230px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #454a63;
+        font-weight: 650;
+    }
+
+    .transaction-detail-sub {
+        display: block;
+        max-width: 250px;
+        margin-top: 4px;
+        overflow-wrap: anywhere;
+        color: #999eb2;
+        font-size: 9px;
+    }
+
+
+    /* =========================================================
+           AMOUNT
+           ========================================================= */
+
+    .transaction-amount {
+        font-size: 11px;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+        .transaction-amount.deposit {
+            color: #159566;
+        }
+
+        .transaction-amount.expense {
+            color: #df4b60;
+        }
+
+
+    /* =========================================================
+           STATUS
+           ========================================================= */
+
+    .transaction-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 9px;
+        border-radius: 20px;
+        font-size: 9px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .transaction-status::before {
+            content: "";
+            width: 5px;
+            height: 5px;
+            flex-shrink: 0;
+            border-radius: 50%;
+        }
+
+        .transaction-status.approved {
+            color: #16875d;
+            background: #e3f7ed;
+        }
+
+            .transaction-status.approved::before {
+                background: #1ca56f;
+            }
+
+        .transaction-status.rejected {
+            color: #cf4258;
+            background: #ffe6ea;
+        }
+
+            .transaction-status.rejected::before {
+                background: #e14c61;
+            }
+
+        .transaction-status.pending {
+            color: #ae741e;
+            background: #fff2d9;
+        }
+
+            .transaction-status.pending::before {
+                background: #e4a038;
+            }
+
+
+    /* =========================================================
+           DATES / RESULT
+           ========================================================= */
+
+    .transaction-date-main {
+        color: #484e68;
+        font-weight: 650;
+        white-space: nowrap;
+    }
+
+    .transaction-date-sub {
+        display: block;
+        margin-top: 4px;
+        color: #999eb2;
+        font-size: 9px;
+        white-space: nowrap;
+    }
+
+    .transaction-result {
+        min-width: 125px;
+    }
+
+    .transaction-result-title {
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+        .transaction-result-title.approved {
+            color: #159566;
+        }
+
+        .transaction-result-title.rejected {
+            color: #df4b60;
+        }
+
+    .transaction-result-sub {
+        display: block;
+        max-width: 220px;
+        margin-top: 4px;
+        overflow-wrap: anywhere;
+        color: #999eb2;
+        font-size: 9px;
+        line-height: 1.45;
+    }
+
+
+    /* =========================================================
+           EMPTY STATE
+           ========================================================= */
+
+    .member-empty-state {
+        padding: 65px 20px;
+        text-align: center;
+    }
+
+    .member-empty-icon {
+        width: 68px;
+        height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        border-radius: 20px;
+        color: #6858df;
+        background: #eeeaff;
+        font-size: 27px;
+    }
+
+    .member-empty-state h5 {
+        margin: 0 0 6px;
+        color: #333850;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .member-empty-state p {
+        margin: 0;
+        color: #969baf;
+        font-size: 11px;
+    }
+
+
+    /* =========================================================
+           FOOT MESSAGE
+           ========================================================= */
+
+    .member-details-foot-message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 21px;
+        color: #999eb2;
+        font-size: 10px;
+    }
+
+        .member-details-foot-message i {
+            color: #6757e8;
+        }
+
+
+    /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+    @@media (max-width: 1199.98px) {
+
+        .member-transactions-table {
+            min-width: 1050px;
+        }
+    }
+
+
+    @@media (max-width: 767.98px) {
+
+        .member-details-header {
+            flex-direction: column;
+        }
+
+            .member-details-header h1 {
+                font-size: 23px;
+            }
+
+        .back-users-btn {
+            width: 100%;
+        }
+
+        .member-profile-content {
+            align-items: flex-start;
+        }
+
+        .member-profile-status {
+            align-items: flex-start;
+        }
+
+        .member-transactions-header {
+            padding: 18px;
+        }
+    }
+
+
+    @@media (max-width: 575.98px) {
+
+        .member-details-header {
+            margin-bottom: 20px;
+        }
+
+        .member-details-title-icon {
+            width: 43px;
+            height: 43px;
+            font-size: 18px;
+        }
+
+        .member-details-header p {
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .member-profile-card {
+            padding: 18px;
+        }
+
+        .member-profile-content {
+            flex-direction: column;
+        }
+
+        .member-profile-main {
+            align-items: flex-start;
+        }
+
+        .member-profile-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 15px;
+            font-size: 18px;
+        }
+
+        .member-profile-status {
+            width: 100%;
+        }
+
+        .member-summary-card {
+            padding: 17px;
+        }
+
+        .member-transactions-header {
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .transaction-count-pill {
+            flex-shrink: 0;
+        }
+
+        .table-responsive {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .member-details-foot-message {
+            padding: 0 12px;
+            text-align: center;
+            line-height: 1.5;
+        }
+    }
+
+</style>
+
+
+<div class="member-details-page">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
+
+    <div class="member-details-header">
+
+        <div class="member-details-title-wrap">
+
+            <div class="member-details-title-icon">
+                <i class="bi bi-person-vcard"></i>
+            </div>
+
+            <div>
+                <h1>
+                    Member Details
+                </h1>
+
+                <p>
+                    Review member information, wallet totals and transaction history.
+                </p>
+            </div>
+
+        </div>
+
+
+        <a asp-controller="Admin"
+           asp-action="Users"
+           class="back-users-btn">
+
+            <i class="bi bi-arrow-left"></i>
+            Back to Members
+
+        </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         MEMBER PROFILE
+         ===================================================== -->
+
+    <div class="member-profile-card">
+
+        <div class="member-profile-content">
+
+            <div class="member-profile-main">
+
+                <div class="member-profile-avatar">
+                    @memberInitial
+                </div>
+
+                <div class="member-profile-info">
+
+                    <h2 class="member-profile-name">
+                        @Model.FullName
+                    </h2>
+
+                    <div class="member-contact-list">
+
+                        <div class="member-contact-item">
+                            <i class="bi bi-envelope"></i>
+
+                            <span>
+                                @Model.Email
+                            </span>
+                        </div>
+
+
+                        <div class="member-contact-item">
+                            <i class="bi bi-telephone"></i>
+
+                            <span>
+                                @(string.IsNullOrWhiteSpace(Model.PhoneNumber)
+                                                                ? "Phone not provided"
+                                                                : Model.PhoneNumber)
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="member-profile-status">
+
+                <span class="member-status-label">
+                    Account Status
+                </span>
+
+                @if (Model.IsDisabled)
+                {
+                    <span class="member-status-pill disabled">
+                        Disabled
+                    </span>
+                }
+                else
+                {
+                    <span class="member-status-pill active">
+                        Active
+                    </span>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         WALLET SUMMARY
+         ===================================================== -->
+
+    <div class="row g-3 member-summary-row">
+
+
+        <!-- CURRENT BALANCE -->
+
+        <div class="col-xl col-md-6">
+
+            <div class="member-summary-card">
+
+                <div class="member-summary-top">
+
+                    <p class="member-summary-label">
+                        Current Balance
+                    </p>
+
+                    <div class="member-summary-icon summary-purple">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+
+                </div>
+
+                <h3 class="member-summary-value @(isNegativeBalance ? "negative" : "")">
+                    ₹@Model.CurrentBalance.ToString("N2")
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <!-- APPROVED DEPOSITS -->
+
+        <div class="col-xl col-md-6">
+
+            <div class="member-summary-card">
+
+                <div class="member-summary-top">
+
+                    <p class="member-summary-label">
+                        Approved Deposits
+                    </p>
+
+                    <div class="member-summary-icon summary-green">
+                        <i class="bi bi-arrow-down-left"></i>
+                    </div>
+
+                </div>
+
+                <h3 class="member-summary-value green">
+                    ₹@Model.TotalDeposited.ToString("N2")
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <!-- APPROVED EXPENSES -->
+
+        <div class="col-xl col-md-6">
+
+            <div class="member-summary-card">
+
+                <div class="member-summary-top">
+
+                    <p class="member-summary-label">
+                        Approved Expenses
+                    </p>
+
+                    <div class="member-summary-icon summary-red">
+                        <i class="bi bi-arrow-up-right"></i>
+                    </div>
+
+                </div>
+
+                <h3 class="member-summary-value red">
+                    ₹@Model.TotalExpenses.ToString("N2")
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <!-- PENDING -->
+
+        <div class="col-xl col-md-6">
+
+            <div class="member-summary-card">
+
+                <div class="member-summary-top">
+
+                    <p class="member-summary-label">
+                        Pending Requests
+                    </p>
+
+                    <div class="member-summary-icon summary-orange">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+
+                </div>
+
+                <h3 class="member-summary-value">
+                    @Model.PendingTransactions
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <!-- TOTAL TRANSACTIONS -->
+
+        <div class="col-xl col-md-6">
+
+            <div class="member-summary-card">
+
+                <div class="member-summary-top">
+
+                    <p class="member-summary-label">
+                        Total Transactions
+                    </p>
+
+                    <div class="member-summary-icon summary-blue">
+                        <i class="bi bi-receipt"></i>
+                    </div>
+
+                </div>
+
+                <h3 class="member-summary-value">
+                    @Model.TotalTransactions
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TRANSACTION HISTORY
+         ===================================================== -->
+
+    <div class="member-transactions-panel">
+
+
+        <div class="member-transactions-header">
+
+            <div>
+                <h5>
+                    Transaction History
+                </h5>
+
+                <p>
+                    Complete wallet activity submitted by this member.
+                </p>
+            </div>
+
+
+            <span class="transaction-count-pill">
+                <i class="bi bi-list-ul"></i>
+                @Model.TotalTransactions Records
+            </span>
+
+        </div>
+
+
+        @if (Model.Transactions.Any())
+        {
+            <div class="table-responsive">
+
+                <table class="member-transactions-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Type</th>
+                            <th>Details</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Transaction Date</th>
+                            <th>Submitted</th>
+                            <th>Result</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var transaction in Model.Transactions)
+                        {
+                            var isDeposit =
+                            transaction.Type == "Deposit";
+
+                            <tr>
+
+
+                                <!-- TYPE -->
+
+                                <td>
+
+                                    @if (isDeposit)
+                                    {
+                                        <span class="transaction-type-pill deposit">
+                                            <i class="bi bi-arrow-down-left"></i>
+                                            Deposit
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="transaction-type-pill expense">
+                                            <i class="bi bi-arrow-up-right"></i>
+                                            Expense
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- DETAILS -->
+
+                                <td>
+
+                                    @if (isDeposit)
+                                    {
+                                        <div class="transaction-detail-main">
+                                            Payment Reference
+                                        </div>
+
+                                        <span class="transaction-detail-sub">
+                                            @(string.IsNullOrWhiteSpace(transaction.ReferenceNumber)
+                                                                            ? "-"
+                                                                            : transaction.ReferenceNumber)
+                            </span>
+                                                        }
+                                    else
+                                    {
+                                        <div class="transaction-detail-main">
+                                            @(string.IsNullOrWhiteSpace(transaction.Category)
+                                                                            ? "Expense"
+                                                                            : transaction.Category)
+                                                                                               </div>
+
+                                        <span class="transaction-detail-sub">
+                                            @(string.IsNullOrWhiteSpace(transaction.Purpose)
+                                                                            ? "-"
+                                                                            : transaction.Purpose)
+                            </span>
+                                                        }
+
+                                </td>
+
+
+                                <!-- AMOUNT -->
+
+                                <td>
+
+                                    @if (isDeposit)
+                                    {
+                                        <span class="transaction-amount deposit">
+                                            + ₹@transaction.Amount.ToString("N2")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="transaction-amount expense">
+                                            - ₹@transaction.Amount.ToString("N2")
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- STATUS -->
+
+                                <td>
+
+                                    @if (transaction.Status == "Approved")
+                                    {
+                                        <span class="transaction-status approved">
+                                            Approved
+                                        </span>
+                                    }
+                                    else if (transaction.Status == "Rejected")
+                                    {
+                                        <span class="transaction-status rejected">
+                                            Rejected
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="transaction-status pending">
+                                            Pending
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- TRANSACTION DATE -->
+
+                                <td>
+
+                                    @if (transaction.TransactionDate.HasValue)
+                                    {
+                                        <div class="transaction-date-main">
+                                            @(transaction.TransactionDate.Value
+                                                                            .ToString("dd MMM yyyy"))
+                            </div>
+
+                            @if (isDeposit)
+                                        {
+                                            <span class="transaction-date-sub">
+                                                Payment date
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="transaction-date-sub">
+                                            —
+                                        </span>
+                                    }
+
+                            </td>
+
+
+                            <!-- SUBMITTED -->
+
+                            <td>
+
+                                <div class="transaction-date-main">
+                                    @(transaction.CreatedDate
+                                                                    .ToLocalTime()
+                                                                    .ToString("dd MMM yyyy"))
+                                                                                         </div>
+
+                                <span class="transaction-date-sub">
+                                    @(transaction.CreatedDate
+                                                                    .ToLocalTime()
+                                                                    .ToString("hh:mm tt"))
+                            </span>
+
+                                </td>
+
+
+                                <!-- RESULT -->
+
+                                <td>
+
+                                    <div class="transaction-result">
+
+                                @if (transaction.Status == "Approved")
+                                        {
+                                            <span class="transaction-result-title approved">
+                                                Approved
+                                            </span>
+
+                                            @if (transaction.ApprovedDate.HasValue)
+                                            {
+                                                <span class="transaction-result-sub">
+                                                    @(transaction.ApprovedDate.Value
+                                                                                        .ToLocalTime()
+                                                                                        .ToString("dd MMM yyyy, hh:mm tt"))
+                                </span>
+                                                                }
+                                        }
+                                        else if (transaction.Status == "Rejected")
+                                        {
+                                            <span class="transaction-result-title rejected">
+                                                Rejected
+                                            </span>
+
+                                            <span class="transaction-result-sub">
+                                                @(string.IsNullOrWhiteSpace(
+                                                                                    transaction.RejectionReason)
+                                                                                    ? "No reason provided"
+                                                                                    : transaction.RejectionReason)
+                                </span>
+                                                                }
+                                        else
+                                        {
+                                            <span class="transaction-result-sub">
+                                                Awaiting approval
+                                            </span>
+                                        }
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <div class="member-empty-state">
+
+                <div class="member-empty-icon">
+                    <i class="bi bi-receipt"></i>
+                </div>
+
+                <h5>
+                    No transactions found
+                </h5>
+
+                <p>
+                    This member has not submitted any wallet transactions.
+                </p>
+
+            </div>
+        }
+
+    </div>
+
+
+    <!-- =====================================================
+         FOOT NOTE
+         ===================================================== -->
+
+    <div class="member-details-foot-message">
+
+        <i class="bi bi-shield-check"></i>
+
+        <span>
+            Wallet totals reflect the member's approved transaction activity.
+        </span>
+
+    </div>
+
+</div>

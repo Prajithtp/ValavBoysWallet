@@ -1,0 +1,46 @@
+@page
+@model ValavBoysWallet.Areas.Identity.Pages.Account.Manage.IndexModel
+@inject IConfiguration Configuration
+@{
+    ViewData["Title"] = "My profile";
+    Layout = "_Layout";
+}
+@if (!string.IsNullOrEmpty(Model.StatusMessage))
+{
+    <div class="alert alert-info" role="status">@Model.StatusMessage</div>
+}
+<form method="post" enctype="multipart/form-data" class="account-card">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    <div class="account-card-title"><div><h2>My profile</h2><p>Make yourself at home.</p></div><span class="account-badge">@(User.IsInRole("Admin") ? "Admin" : "Member")</span></div>
+    <div class="account-photo-row">
+        <div class="account-photo" id="photo-preview">
+            @if (Model.HasPhoto) { <img src="@Url.Action("Index", "ProfilePhoto", new { area = "" })" alt="Your profile photo" /> }
+            else { <span>@Model.Initial</span> }
+        </div>
+        <div class="account-photo-actions">
+            <label for="Photo" class="account-upload">Choose profile photo</label>
+            <input asp-for="Photo" type="file" accept="image/jpeg,image/png" class="account-file" aria-describedby="photo-hint photo-feedback" />
+            <p id="photo-hint">JPG or PNG · Up to 512 KB. Saved when you select Save changes.</p>
+            <span asp-validation-for="Photo" class="text-danger"></span>
+            <p id="photo-feedback" role="status"></p>
+        </div>
+    </div>
+    <div class="account-fields">
+        <div><label asp-for="Input.FullName"></label><input asp-for="Input.FullName" class="form-control" autocomplete="name" /><span asp-validation-for="Input.FullName" class="text-danger"></span></div>
+        <div><label asp-for="Input.PhoneNumber"></label><input asp-for="Input.PhoneNumber" class="form-control" autocomplete="tel" /><span asp-validation-for="Input.PhoneNumber" class="text-danger"></span></div>
+        <div class="account-wide"><label for="profile-email">Email address</label><input id="profile-email" value="@Model.Email" class="form-control" readonly /><p class="account-hint">@if (Configuration.GetValue<bool>("Email:Enabled")) { <span>@(Model.EmailConfirmed ? "Verified email" : "Verify your email to enable password recovery.")</span> <a asp-page="./Email">Manage email</a> } else { <span>Email delivery is unavailable. This address is your sign-in name.</span> }</p></div>
+    </div>
+    <div class="account-form-footer"><span>Changes apply to your account only.</span><button type="submit" class="account-primary">Save changes <i class="bi bi-arrow-right"></i></button></div>
+</form>
+@if (Model.HasPhoto)
+{
+    <form method="post" asp-page-handler="RemovePhoto" class="account-remove"><button class="btn btn-link text-danger" type="submit">Remove profile photo</button></form>
+}
+<section class="account-card account-security">
+    <div class="account-security-icon"><i class="bi bi-shield-check"></i></div>
+    <div><h2>Password &amp; security</h2><p>Update your password to keep your account secure.</p><div class="account-security-links"><a asp-page="./ChangePassword">Change password <i class="bi bi-arrow-up-right"></i></a><a asp-page="/Account/ForgotPassword">Forgot password?</a></div></div>
+</section>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/account-photo.js" asp-append-version="true"></script>
+}

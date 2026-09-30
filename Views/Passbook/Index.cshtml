@@ -1,0 +1,1230 @@
+@model ValavBoysWallet.ViewModels.GroupPassbookViewModel
+
+@{
+    ViewData["Title"] = "Group Passbook";
+
+    var transactions = Model.Transactions;
+
+    var transactionCount =
+        transactions?.Count ?? 0;
+
+    var depositCount =
+        transactions?.Count(x => x.Type == "Deposit") ?? 0;
+
+    var expenseCount =
+        transactions?.Count(x => x.Type != "Deposit") ?? 0;
+}
+
+<style>
+
+    /* =========================================================
+           GROUP PASSBOOK
+           ========================================================= */
+
+    .passbook-page {
+        width: 100%;
+    }
+
+
+    /* =========================================================
+           PAGE HEADER
+           ========================================================= */
+
+    .passbook-page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 26px;
+    }
+
+    .passbook-title-wrap {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .passbook-title-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 14px;
+        color: #6757e8;
+        background: #eeeaff;
+        font-size: 21px;
+    }
+
+    .passbook-page-header h1 {
+        margin: 0;
+        color: #20243f;
+        font-size: 27px;
+        font-weight: 750;
+        letter-spacing: -.7px;
+    }
+
+    .passbook-page-header p {
+        margin: 6px 0 0;
+        color: #8c92a8;
+        font-size: 13px;
+    }
+
+    .passbook-dashboard-btn {
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 9px 15px;
+        border: 1px solid #e0e3ed;
+        border-radius: 11px;
+        color: #656c88;
+        background: #fff;
+        font-size: 12px;
+        font-weight: 650;
+        transition: all .2s ease;
+    }
+
+        .passbook-dashboard-btn:hover {
+            color: #6757e8;
+            border-color: #d3cdf8;
+            background: #fbfaff;
+            transform: translateY(-1px);
+        }
+
+
+    /* =========================================================
+           HERO BALANCE
+           ========================================================= */
+
+    .passbook-balance-card {
+        position: relative;
+        height: 100%;
+        min-height: 153px;
+        overflow: hidden;
+        padding: 22px 23px;
+        border-radius: 18px;
+        color: #fff;
+        background: linear-gradient( 135deg, #7162ec 0%, #5d4bde 55%, #4e3acb 100% );
+        box-shadow: 0 13px 30px rgba(94, 75, 222, .20);
+    }
+
+        .passbook-balance-card::before {
+            content: "";
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            top: -80px;
+            right: -45px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.08);
+        }
+
+        .passbook-balance-card::after {
+            content: "";
+            position: absolute;
+            width: 115px;
+            height: 115px;
+            right: 35px;
+            bottom: -75px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.06);
+        }
+
+    .passbook-balance-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .passbook-balance-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 18px;
+    }
+
+    .passbook-balance-label {
+        margin: 0;
+        color: rgba(255,255,255,.72);
+        font-size: 11px;
+        font-weight: 550;
+    }
+
+    .passbook-balance-icon {
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        color: #fff;
+        background: rgba(255,255,255,.14);
+        backdrop-filter: blur(5px);
+        font-size: 16px;
+    }
+
+    .passbook-balance-value {
+        margin: 0 0 7px;
+        color: #fff;
+        font-size: 27px;
+        font-weight: 750;
+        letter-spacing: -.5px;
+    }
+
+    .passbook-balance-note {
+        color: rgba(255,255,255,.67);
+        font-size: 10px;
+    }
+
+
+    /* =========================================================
+           SUMMARY CARDS
+           ========================================================= */
+
+    .passbook-summary-row {
+        margin-bottom: 20px;
+    }
+
+    .passbook-summary-card {
+        height: 100%;
+        min-height: 153px;
+        padding: 22px 21px;
+        border: 1px solid #e9ebf3;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 8px 28px rgba(37, 44, 80, .05);
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+        .passbook-summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 13px 32px rgba(37, 44, 80, .08);
+        }
+
+    .passbook-summary-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .passbook-summary-label {
+        margin: 0;
+        color: #8d93aa;
+        font-size: 11px;
+    }
+
+    .passbook-summary-icon {
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 11px;
+        font-size: 16px;
+    }
+
+        .passbook-summary-icon.green {
+            color: #188d62;
+            background: #e3f8ef;
+        }
+
+        .passbook-summary-icon.red {
+            color: #dc4b60;
+            background: #ffe7eb;
+        }
+
+    .passbook-summary-value {
+        margin: 0 0 7px;
+        font-size: 23px;
+        font-weight: 750;
+        letter-spacing: -.4px;
+    }
+
+        .passbook-summary-value.green {
+            color: #159566;
+        }
+
+        .passbook-summary-value.red {
+            color: #df4b60;
+        }
+
+    .passbook-summary-note {
+        color: #999eb2;
+        font-size: 10px;
+    }
+
+
+    /* =========================================================
+           PASSBOOK PANEL
+           ========================================================= */
+
+    .passbook-panel {
+        overflow: hidden;
+        border: 1px solid #e8eaf2;
+        border-radius: 19px;
+        background: #fff;
+        box-shadow: 0 10px 32px rgba(37, 44, 80, .055);
+    }
+
+    .passbook-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 21px 23px;
+        border-bottom: 1px solid #edf0f5;
+    }
+
+        .passbook-panel-header h5 {
+            margin: 0 0 4px;
+            color: #252a47;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .passbook-panel-header p {
+            margin: 0;
+            color: #9297ad;
+            font-size: 11px;
+        }
+
+    .passbook-panel-meta {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .passbook-meta-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 10px;
+        border-radius: 20px;
+        font-size: 9px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .passbook-meta-pill.all {
+            color: #6152d4;
+            background: #eeeaff;
+        }
+
+        .passbook-meta-pill.deposit {
+            color: #16875d;
+            background: #e3f7ed;
+        }
+
+        .passbook-meta-pill.expense {
+            color: #cf4258;
+            background: #ffe6ea;
+        }
+
+
+    /* =========================================================
+           TABLE
+           ========================================================= */
+
+    .passbook-table {
+        width: 100%;
+        margin: 0;
+    }
+
+        .passbook-table thead th {
+            padding: 12px 17px;
+            color: #8d92a8;
+            background: #fafbfe;
+            border: 0;
+            border-bottom: 1px solid #edf0f5;
+            font-size: 9px;
+            font-weight: 650;
+            text-transform: uppercase;
+            letter-spacing: .35px;
+            white-space: nowrap;
+        }
+
+        .passbook-table tbody td {
+            padding: 15px 17px;
+            color: #555b74;
+            border-bottom: 1px solid #f0f1f5;
+            font-size: 11px;
+            vertical-align: middle;
+        }
+
+        .passbook-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .passbook-table tbody tr {
+            transition: background .15s ease;
+        }
+
+            .passbook-table tbody tr:hover {
+                background: #fbfbfe;
+            }
+
+
+    /* =========================================================
+           DATE
+           ========================================================= */
+
+    .passbook-date-main {
+        color: #484e68;
+        font-weight: 650;
+        white-space: nowrap;
+    }
+
+    .passbook-date-sub {
+        display: block;
+        margin-top: 4px;
+        color: #999eb2;
+        font-size: 9px;
+        white-space: nowrap;
+    }
+
+    .passbook-date-empty {
+        color: #b2b6c5;
+        font-weight: 600;
+    }
+
+
+    /* =========================================================
+           MEMBER
+           ========================================================= */
+
+    .passbook-member {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 180px;
+    }
+
+    .passbook-member-avatar {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 11px;
+        color: #fff;
+        background: linear-gradient( 135deg, #7565ed, #5948d6 );
+        font-size: 11px;
+        font-weight: 750;
+        box-shadow: 0 5px 13px rgba(103,87,232,.17);
+    }
+
+    .passbook-member-name {
+        max-width: 145px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #3f445e;
+        font-weight: 650;
+    }
+
+    .passbook-member-email {
+        max-width: 155px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-top: 3px;
+        color: #999eb2;
+        font-size: 9px;
+    }
+
+
+    /* =========================================================
+           TYPE
+           ========================================================= */
+
+    .passbook-type {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 9px;
+        border-radius: 20px;
+        font-size: 9px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .passbook-type.deposit {
+            color: #16875d;
+            background: #e3f7ed;
+        }
+
+        .passbook-type.expense {
+            color: #cf4258;
+            background: #ffe6ea;
+        }
+
+        .passbook-type i {
+            font-size: 10px;
+        }
+
+
+    /* =========================================================
+           DETAILS
+           ========================================================= */
+
+    .passbook-details {
+        min-width: 150px;
+        max-width: 230px;
+    }
+
+    .passbook-details-main {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #454a63;
+        font-weight: 600;
+    }
+
+    .passbook-details-sub {
+        display: block;
+        margin-top: 4px;
+        color: #999eb2;
+        font-size: 9px;
+    }
+
+    .passbook-category {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 5px;
+        padding: 4px 7px;
+        border-radius: 20px;
+        color: #747b95;
+        background: #f1f3f8;
+        font-size: 8px;
+        font-weight: 600;
+    }
+
+
+    /* =========================================================
+           MONEY
+           ========================================================= */
+
+    .passbook-amount {
+        font-size: 11px;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+        .passbook-amount.deposit {
+            color: #159566;
+        }
+
+        .passbook-amount.expense {
+            color: #df4b60;
+        }
+
+    .passbook-running-balance {
+        color: #343951;
+        font-size: 11px;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+
+    /* =========================================================
+           EMPTY STATE
+           ========================================================= */
+
+    .passbook-empty {
+        padding: 68px 20px;
+        text-align: center;
+    }
+
+    .passbook-empty-icon {
+        width: 68px;
+        height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        border-radius: 20px;
+        color: #6858df;
+        background: #eeeaff;
+        font-size: 27px;
+    }
+
+    .passbook-empty h5 {
+        margin: 0 0 6px;
+        color: #333850;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .passbook-empty p {
+        margin: 0;
+        color: #969baf;
+        font-size: 11px;
+    }
+
+
+    /* =========================================================
+           FOOTER NOTE
+           ========================================================= */
+
+    .passbook-foot-message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 21px;
+        color: #999eb2;
+        font-size: 10px;
+    }
+
+        .passbook-foot-message i {
+            color: #6757e8;
+        }
+
+
+    /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+    @@media (max-width: 1199.98px) {
+
+        .passbook-table {
+            min-width: 1050px;
+        }
+    }
+
+    @@media (max-width: 767.98px) {
+
+        .passbook-page-header {
+            flex-direction: column;
+        }
+
+            .passbook-page-header h1 {
+                font-size: 23px;
+            }
+
+        .passbook-dashboard-btn {
+            width: 100%;
+        }
+
+        .passbook-panel-header {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 18px;
+        }
+
+        .passbook-panel-meta {
+            justify-content: flex-start;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+
+        .passbook-page-header {
+            margin-bottom: 20px;
+        }
+
+        .passbook-title-icon {
+            width: 43px;
+            height: 43px;
+            font-size: 18px;
+        }
+
+        .passbook-page-header p {
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .passbook-balance-card,
+        .passbook-summary-card {
+            min-height: 140px;
+            padding: 18px;
+        }
+
+        .passbook-balance-value {
+            font-size: 25px;
+        }
+
+        .passbook-summary-value {
+            font-size: 21px;
+        }
+
+        .passbook-panel-header {
+            gap: 14px;
+        }
+
+        .passbook-panel-meta {
+            width: 100%;
+            gap: 6px;
+        }
+
+        .passbook-meta-pill {
+            padding: 6px 9px;
+        }
+
+        .table-responsive {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .passbook-foot-message {
+            padding: 0 12px;
+            text-align: center;
+            line-height: 1.5;
+        }
+    }
+</style>
+
+
+<div class="passbook-page">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
+
+    <div class="passbook-page-header">
+
+        <div class="passbook-title-wrap">
+
+            <div class="passbook-title-icon">
+                <i class="bi bi-journal-text"></i>
+            </div>
+
+            <div>
+
+                <h1>
+                    Group Passbook
+                </h1>
+
+                <p>
+                    Complete approved activity of the Valav Boys Wallet.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <a asp-controller="Wallet"
+           asp-action="Dashboard"
+           class="passbook-dashboard-btn">
+
+            <i class="bi bi-grid"></i>
+
+            Wallet Dashboard
+
+        </a>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         SUMMARY
+         ===================================================== -->
+
+    <div class="row g-3 passbook-summary-row">
+
+
+        <!-- CURRENT BALANCE -->
+
+        <div class="col-lg-4">
+
+            <div class="passbook-balance-card">
+
+                <div class="passbook-balance-content">
+
+                    <div class="passbook-balance-top">
+
+                        <p class="passbook-balance-label">
+                            Current Group Balance
+                        </p>
+
+                        <div class="passbook-balance-icon">
+                            <i class="bi bi-wallet2"></i>
+                        </div>
+
+                    </div>
+
+                    <h2 class="passbook-balance-value">
+                        ₹@Model.GroupBalance.ToString("N2")
+                    </h2>
+
+                    <span class="passbook-balance-note">
+                        Available shared wallet balance
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- DEPOSITS -->
+
+        <div class="col-lg-4 col-md-6">
+
+            <div class="passbook-summary-card">
+
+                <div class="passbook-summary-top">
+
+                    <p class="passbook-summary-label">
+                        Total Deposits
+                    </p>
+
+                    <div class="passbook-summary-icon green">
+
+                        <i class="bi bi-arrow-down-left"></i>
+
+                    </div>
+
+                </div>
+
+                <h3 class="passbook-summary-value green">
+                    + ₹@Model.TotalDeposits.ToString("N2")
+                </h3>
+
+                <span class="passbook-summary-note">
+                    @depositCount approved deposit transactions
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- EXPENSES -->
+
+        <div class="col-lg-4 col-md-6">
+
+            <div class="passbook-summary-card">
+
+                <div class="passbook-summary-top">
+
+                    <p class="passbook-summary-label">
+                        Total Expenses
+                    </p>
+
+                    <div class="passbook-summary-icon red">
+
+                        <i class="bi bi-arrow-up-right"></i>
+
+                    </div>
+
+                </div>
+
+                <h3 class="passbook-summary-value red">
+                    - ₹@Model.TotalExpenses.ToString("N2")
+                </h3>
+
+                <span class="passbook-summary-note">
+                    @expenseCount approved expense transactions
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         PASSBOOK ACTIVITY
+         ===================================================== -->
+
+    <div class="passbook-panel">
+
+
+        <!-- PANEL HEADER -->
+
+        <div class="passbook-panel-header">
+
+            <div>
+
+                <h5>
+                    Wallet Activity
+                </h5>
+
+                <p>
+                    Approved deposits and expenses with running balance.
+                </p>
+
+            </div>
+
+
+            <div class="passbook-panel-meta">
+
+                <span class="passbook-meta-pill all">
+
+                    <i class="bi bi-list-ul"></i>
+
+                    @transactionCount Transactions
+
+                </span>
+
+
+                <span class="passbook-meta-pill deposit">
+
+                    <i class="bi bi-arrow-down-left"></i>
+
+                    @depositCount Deposits
+
+                </span>
+
+
+                <span class="passbook-meta-pill expense">
+
+                    <i class="bi bi-arrow-up-right"></i>
+
+                    @expenseCount Expenses
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        @if (transactions != null && transactions.Any())
+        {
+
+            <div class="table-responsive">
+
+                <table class="passbook-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Transaction Date
+                            </th>
+
+                            <th>
+                                Posted
+                            </th>
+
+                            <th>
+                                Member
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Details
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th class="text-end">
+                                Balance
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var item in transactions)
+                        {
+                            var isDeposit =
+                            item.Type == "Deposit";
+
+                            var memberInitial =
+                            !string.IsNullOrWhiteSpace(item.MemberName)
+                            ? item.MemberName.Substring(0, 1).ToUpper()
+                            : "M";
+
+                            <tr>
+
+
+                                <!-- =================================
+                                     TRANSACTION DATE
+                                     ================================= -->
+
+                                <td>
+
+                                    @if (isDeposit)
+                                    {
+                                        @if (item.ActualTransactionDate.HasValue)
+                                        {
+                                            <div class="passbook-date-main">
+                                                @(item.ActualTransactionDate.Value
+                                                                                .ToString("dd MMM yyyy"))
+                            </div>
+
+                                            <span class="passbook-date-sub">
+                                                Payment date
+                                            </span>
+                                                        }
+                                        else
+                                        {
+                                            <div class="passbook-date-empty">
+                                                —
+                                            </div>
+
+                                            <span class="passbook-date-sub">
+                                                Older deposit
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="passbook-date-empty">
+                                            —
+                                        </div>
+
+                                        <span class="passbook-date-sub">
+                                            Expense request
+                                        </span>
+                                    }
+
+                            </td>
+
+
+
+                            <!-- =================================
+                                 POSTED DATE
+                                 ================================= -->
+
+                            <td>
+
+                                <div class="passbook-date-main">
+
+                                    @(item.PostedDate
+                                                                    .ToLocalTime()
+                                                                    .ToString("dd MMM yyyy"))
+
+                                </div>
+
+                                <span class="passbook-date-sub">
+
+                                    @(item.PostedDate
+                                                                    .ToLocalTime()
+                                                                    .ToString("hh:mm tt"))
+
+                            </span>
+
+                                </td>
+
+
+
+                                <!-- =================================
+                                     MEMBER
+                                     ================================= -->
+
+                                <td>
+
+                                    <div class="passbook-member">
+
+                                        <div class="passbook-member-avatar">
+                                            @memberInitial
+                                        </div>
+
+                                        <div>
+
+                                            <div class="passbook-member-name">
+                                                @item.MemberName
+                                            </div>
+
+                                            <div class="passbook-member-email">
+                                                @item.MemberEmail
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+
+                                <!-- =================================
+                                     TYPE
+                                     ================================= -->
+
+                                <td>
+
+                            @if (isDeposit)
+                                    {
+                                        <span class="passbook-type deposit">
+
+                                            <i class="bi bi-arrow-down-left"></i>
+
+                                            Deposit
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="passbook-type expense">
+
+                                            <i class="bi bi-arrow-up-right"></i>
+
+                                            Expense
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+
+                                <!-- =================================
+                                     DETAILS
+                                     ================================= -->
+
+                                <td>
+
+                                    <div class="passbook-details">
+
+                                        <div class="passbook-details-main">
+                                            @item.Description
+                                        </div>
+
+
+                                        @if (isDeposit)
+                                        {
+                                            <span class="passbook-details-sub">
+                                                Payment reference
+                                            </span>
+                                        }
+                                        else if (item.Category != "-")
+                                        {
+                                            <span class="passbook-category">
+
+                                                <i class="bi bi-tag"></i>
+
+                                                @item.Category
+
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="passbook-details-sub">
+                                                Expense
+                                            </span>
+                                        }
+
+                                    </div>
+
+                                </td>
+
+
+
+                                <!-- =================================
+                                     AMOUNT
+                                     ================================= -->
+
+                                <td>
+
+                                    @if (isDeposit)
+                                    {
+                                        <span class="passbook-amount deposit">
+
+                                            + ₹@item.Amount.ToString("N2")
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="passbook-amount expense">
+
+                                            - ₹@item.Amount.ToString("N2")
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+
+                                <!-- =================================
+                                     RUNNING BALANCE
+                                     ================================= -->
+
+                                <td class="text-end">
+
+                                    <span class="passbook-running-balance">
+
+                                        ₹@item.RunningBalance.ToString("N2")
+
+                                    </span>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+
+            <!-- =============================================
+                 EMPTY STATE
+                 ============================================= -->
+
+            <div class="passbook-empty">
+
+                <div class="passbook-empty-icon">
+
+                    <i class="bi bi-journal-text"></i>
+
+                </div>
+
+                <h5>
+                    No approved transactions yet
+                </h5>
+
+                <p>
+                    Approved wallet activity will appear here.
+                </p>
+
+            </div>
+        }
+
+    </div>
+
+
+
+    <!-- =====================================================
+         FOOT MESSAGE
+         ===================================================== -->
+
+    <div class="passbook-foot-message">
+
+        <i class="bi bi-shield-check"></i>
+
+        <span>
+            The passbook contains approved wallet transactions only.
+        </span>
+
+    </div>
+
+
+</div>
